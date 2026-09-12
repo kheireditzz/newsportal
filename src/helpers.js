@@ -119,4 +119,11 @@ function readingTime(text) {
   return `${minutes} menit baca`;
 }
 
-module.exports = { slugify, uniqueSlug, getSettings, formatDate, timeAgo, truncate, icon, iconList, readingTime };
+function imgUrl(val, fallback = 'images/art-1.svg') {
+  if (!val) return '/uploads/' + fallback;
+  if (/^https?:\/\//i.test(val)) return val;
+  if (val.startsWith('/')) return val;
+  return '/uploads/' + val;
+}
+
+module.exports = { slugify, uniqueSlug, getSettings, formatDate, timeAgo, truncate, icon, iconList, readingTime, imgUrl };

@@ -43,7 +43,7 @@
       </span>
       <span class="tab-num"><%= String(articles.indexOf(a) + 1).padStart(2, '0') %></span>
       <div class="cell-title">
-        <img class="thumb" src="/uploads/<%= a.image || 'images/art-1.svg' %>" alt="">
+        <img class="thumb" src="<%= h.imgUrl(a.image) %>" alt="">
         <div>
           <b><a href="/admin/artikel/<%= a.id %>/edit"><%= a.title %></a></b>
           <small>/berita/<%= a.slug %></small>

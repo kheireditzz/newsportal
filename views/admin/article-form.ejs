@@ -1,4 +1,4 @@
-﻿<%
+<%
   var isEdit = !!article;
   var action = isEdit ? '/admin/artikel/' + article.id : '/admin/artikel';
   var val = function(field, fallback) {
@@ -87,7 +87,7 @@
         </div>
         <div class="panel-body">
           <label class="img-drop">
-            <div class="prev" <% if (curImage) { %>style="background:url('/uploads/<%= curImage %>') center/cover no-repeat;border:0"<% } %>><%= curImage ? 'Ganti gambar' : 'Klik untuk memilih gambar' %></div>
+            <div class="prev" <% if (curImage) { %>style="background:url('<%= h.imgUrl(curImage) %>') center/cover no-repeat;border:0"<% } %>><%= curImage ? 'Ganti gambar' : 'Klik untuk memilih gambar' %></div>
             <input type="file" name="image" accept="image/*">
             <div class="txt"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3M17 8l-5-5-5 5M12 3v12"/></svg>Pilih dari perangkat</div>
           </label>

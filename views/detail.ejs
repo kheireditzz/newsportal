@@ -6,7 +6,7 @@
   "headline": <%= JSON.stringify(article.title) %>,
   "description": <%= JSON.stringify(article.excerpt || article.title) %>,
   "image": [
-    "<%= (typeof fullUrl !== 'undefined' ? fullUrl.replace(/\/berita\/.*/, '') : '') %>/uploads/<%= article.image || 'images/art-1.svg' %>"
+    "<%= (article.image && /^https?:\\/\\//i.test(article.image)) ? article.image : ((typeof fullUrl !== 'undefined' ? fullUrl.replace(/\\/berita\\/.*/, '') : '') + h.imgUrl(article.image)) %>"
   ],
   "datePublished": "<%= new Date(String(article.published_at || article.created_at || '').replace(' ', 'T')).toISOString() %>",
   "dateModified": "<%= new Date(String(article.updated_at || article.published_at || article.created_at || '').replace(' ', 'T')).toISOString() %>",
@@ -122,7 +122,7 @@
 
         <!-- Featured / Cover Image -->
         <div class="article-hero-img">
-          <img src="/uploads/<%= article.image || 'images/art-1.svg' %>" alt="<%= article.title %>" loading="lazy">
+          <img src="<%= h.imgUrl(article.image) %>" alt="<%= article.title %>" loading="lazy">
           <% if (article.caption) { %>
             <figcaption class="hero-img-caption"><%= article.caption %></figcaption>
           <% } %>

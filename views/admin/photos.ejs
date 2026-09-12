@@ -23,7 +23,7 @@
           </span>
           <span class="tab-num"><%= String(i + 1).padStart(2, '0') %></span>
           <div class="cell-title">
-            <img class="thumb" src="/uploads/<%= p.image %>" alt="">
+            <img class="thumb" src="<%= h.imgUrl(p.image, 'images/photo-1.svg') %>" alt="">
             <div>
               <b><a href="/galeri" target="_blank" rel="noopener"><%= p.title %></a></b>
               <small><%= h.truncate(p.caption, 55) %></small>

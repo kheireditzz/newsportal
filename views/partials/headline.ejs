@@ -2,7 +2,7 @@
 <% if (first) { %>
 <article class="card big">
   <a href="/berita/<%= first.slug %>" class="card-media">
-    <img src="/uploads/<%= first.image %>" alt="<%= first.title %>">
+    <img src="<%= h.imgUrl(first.image) %>" alt="<%= first.title %>">
     <span class="badge-featured">HEADLINE</span>
   </a>
   <div class="card-body">

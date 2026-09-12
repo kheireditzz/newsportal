@@ -1,6 +1,6 @@
 <article class="card">
   <a href="/berita/<%= article.slug %>" class="card-media">
-    <img src="/uploads/<%= article.image || 'images/art-1.svg' %>" alt="<%= article.title %>" loading="lazy">
+    <img src="<%= h.imgUrl(article.image) %>" alt="<%= article.title %>" loading="lazy">
     <% if (article.category_name) { %><span class="card-cat"><%= article.category_name %></span><% } %>
     <% if (article.featured) { %><span class="badge-featured">UTAMA</span><% } %>
   </a>

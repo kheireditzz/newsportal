@@ -34,7 +34,7 @@
     <div class="hero-grid">
       <div class="slider" data-slider>
         <% slides.forEach(function(s, i){ %>
-          <div class="slide <%= i===0 ? 'active':'' %> <%= s.show_image ? '' : 'slide--text' %>" <% if (s.show_image) { %>style="background-image:url('/uploads/<%= s.image %>')"<% } %>>
+          <div class="slide <%= i===0 ? 'active':'' %> <%= s.show_image ? '' : 'slide--text' %>" <% if (s.show_image) { %>style="background-image:url('<%= h.imgUrl(s.image) %>')"<% } %>>
             <div class="slide-body">
               <% if (s.badge) { %><span class="slide-badge"><%= s.badge %></span><% } %>
               <h2 class="slide-title"><%= s.title %></h2>
@@ -49,7 +49,7 @@
 
       <div class="hero-side">
         <% (featured && featured.length ? featured.slice(1,4) : latest.slice(0,3)).forEach(function(a){ %>
-          <a href="/berita/<%= a.slug %>" class="side-card" style="background-image:url('/uploads/<%= a.image %>')">
+          <a href="/berita/<%= a.slug %>" class="side-card" style="background-image:url('<%= h.imgUrl(a.image) %>')">
             <div class="side-card-body">
               <div class="cat"><%= a.category_name || 'Berita' %></div>
               <h3><%= a.title %></h3>
@@ -119,7 +119,7 @@
       <% videos.forEach(function(v){ %>
         <article class="video-card">
           <a href="#" class="video-thumb" data-video="<%= v.url %>">
-            <img src="/uploads/<%= v.thumbnail %>" alt="<%= v.title %>" loading="lazy">
+            <img src="<%= h.imgUrl(v.thumbnail, 'images/vid-1.svg') %>" alt="<%= v.title %>" loading="lazy">
             <div class="play-btn"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
             <% if (v.duration) { %><span class="video-duration"><%= v.duration %></span><% } %>
           </a>
@@ -143,8 +143,8 @@
     </div>
     <div class="gallery-grid">
       <% photos.forEach(function(p, i){ %>
-        <div class="g-item <%= i===0 ? 'wide':'' %>" data-full="/uploads/<%= p.image %>" data-caption="<%= p.caption || p.title %>">
-          <img src="/uploads/<%= p.image %>" alt="<%= p.title %>" loading="lazy">
+        <div class="g-item <%= i===0 ? 'wide':'' %>" data-full="<%= h.imgUrl(p.image, 'images/photo-1.svg') %>" data-caption="<%= p.caption || p.title %>">
+          <img src="<%= h.imgUrl(p.image, 'images/photo-1.svg') %>" alt="<%= p.title %>" loading="lazy">
           <div class="cap"><%= p.title %></div>
         </div>
       <% }) %>
