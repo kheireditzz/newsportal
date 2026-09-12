@@ -184,17 +184,41 @@
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m18 15-6-6-6 6"/></svg>
 </button>
 
-<!-- Floating Follow Widget for TikTok & Instagram -->
-<aside class="floating-social-widget" aria-label="Media Sosial Resmi">
-  <span class="fsw-label"><span class="fsw-pulse"></span> Ikuti Kami:</span>
-  <a href="https://www.tiktok.com/@kestylein" target="_blank" rel="noopener" class="fsw-btn fsw-tiktok" title="Follow @kestylein di TikTok">
-    <%- h.icon('tiktok', 14) %>
-    <span>@kestylein</span>
-  </a>
-  <a href="https://www.instagram.com/khairindtz?stkn=c2I4c2diYmYybGxh" target="_blank" rel="noopener" class="fsw-btn fsw-instagram" title="Follow @khairindtz di Instagram">
-    <%- h.icon('instagram', 14) %>
-    <span>@khairindtz</span>
-  </a>
+<!-- Floating Follow Popup for TikTok & Instagram (Muncul & Menghilang Berkala) -->
+<aside id="floatingSocialPopup" class="floating-social-popup" aria-label="Media Sosial Resmi" style="display:none">
+  <button type="button" class="fsp-close" id="fspClose" aria-label="Tutup Banner">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  
+  <div class="fsp-header">
+    <span class="fsp-pulse"></span>
+    <span class="fsp-head-tag">OFFICIAL CREATOR</span>
+  </div>
+
+  <div class="fsp-body">
+    <h4 class="fsp-title">Ikuti Update Video &amp; Story Viral</h4>
+    <p class="fsp-desc">Dapatkan konten eksklusif, rekomendasi harian, dan cuplikan tren terbaru langsung dari kami.</p>
+  </div>
+
+  <div class="fsp-actions">
+    <a href="https://www.tiktok.com/@kestylein" target="_blank" rel="noopener" class="fsp-btn fsp-tiktok" title="Follow @kestylein di TikTok">
+      <%- h.icon('tiktok', 17) %>
+      <div class="fsp-btn-content">
+        <span class="fsp-btn-label">TIKTOK</span>
+        <span class="fsp-btn-user">@kestylein</span>
+      </div>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="fsp-arrow"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+    </a>
+    
+    <a href="https://www.instagram.com/khairindtz?stkn=c2I4c2diYmYybGxh" target="_blank" rel="noopener" class="fsp-btn fsp-instagram" title="Follow @khairindtz di Instagram">
+      <%- h.icon('instagram', 17) %>
+      <div class="fsp-btn-content">
+        <span class="fsp-btn-label">INSTAGRAM</span>
+        <span class="fsp-btn-user">@khairindtz</span>
+      </div>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="fsp-arrow"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+    </a>
+  </div>
 </aside>
 
 <div id="siteToast" class="site-toast" role="status" aria-live="polite"></div>

@@ -1645,90 +1645,155 @@ body.zen-focus-mode {
   transform: translateY(6px);
 }
 
-/* Floating Corner Social Widget (Follow CTA) */
-.floating-social-widget {
+/* ==========================================================================
+   Floating Social Popup (Follow CTA Card - Muncul & Menghilang Berkala)
+   ========================================================================== */
+.floating-social-popup {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  z-index: 85;
+  width: 320px;
+  max-width: calc(100vw - 36px);
+  z-index: 95;
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  transform: translateY(30px) scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+.floating-social-popup.fsp-visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+.fsp-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+.fsp-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  transform: scale(1.1);
+}
+.fsp-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(15, 23, 42, 0.9);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  padding: 8px 12px 8px 10px;
-  border-radius: 9999px;
-  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.4);
-  animation: floatSubtle 4s ease-in-out infinite;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  margin-bottom: 10px;
 }
-.floating-social-widget:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 16px 36px -2px rgba(0, 0, 0, 0.5);
-}
-.fsw-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #f1f5f9;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-right: 4px;
-}
-.fsw-pulse {
-  width: 7px;
-  height: 7px;
+.fsp-pulse {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #22c55e;
-  box-shadow: 0 0 8px #22c55e;
+  box-shadow: 0 0 10px #22c55e;
   animation: pulseDot 1.8s ease-in-out infinite;
 }
-.fsw-btn {
-  display: inline-flex;
+.fsp-head-tag {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #38bdf8;
+}
+.fsp-title {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: #ffffff;
+  margin-bottom: 5px;
+  letter-spacing: -0.01em;
+}
+.fsp-desc {
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+.fsp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fsp-btn {
+  display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: 9999px;
-  font-size: 11.5px;
-  font-weight: 700;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 12px;
   text-decoration: none;
-  transition: transform 0.15s ease, filter 0.15s ease;
+  transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.fsp-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+}
+.fsp-tiktok {
+  background: linear-gradient(135deg, #111111 0%, #1e1e24 100%);
+  border: 1px solid rgba(254, 44, 85, 0.45);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   color: #ffffff;
 }
-.fsw-btn:hover {
-  transform: scale(1.06);
-  filter: brightness(1.15);
+.fsp-instagram {
+  background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(225, 48, 108, 0.35);
   color: #ffffff;
 }
-.fsw-tiktok {
-  background: #000000;
-  border: 1px solid rgba(254, 44, 85, 0.6);
-  box-shadow: 0 2px 8px rgba(254, 44, 85, 0.25);
+.fsp-btn-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
-.fsw-instagram {
-  background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-  box-shadow: 0 2px 8px rgba(225, 48, 108, 0.3);
+.fsp-btn-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+  line-height: 1;
+  margin-bottom: 2px;
 }
-@keyframes floatSubtle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+.fsp-btn-user {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
 }
+.fsp-arrow {
+  opacity: 0.8;
+  transition: transform 0.2s ease;
+}
+.fsp-btn:hover .fsp-arrow {
+  transform: translate(2px, -2px);
+  opacity: 1;
+}
+
 @media (max-width: 640px) {
-  .floating-social-widget {
+  .floating-social-popup {
     bottom: 16px;
     right: 16px;
-    padding: 6px 10px 6px 8px;
-  }
-  .fsw-label {
-    display: none;
-  }
-  .fsw-btn {
-    font-size: 11px;
-    padding: 5px 8px;
+    width: calc(100vw - 32px);
+    padding: 16px 14px;
+    border-radius: 16px;
   }
 }
 

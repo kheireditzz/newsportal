@@ -584,6 +584,59 @@ function initRotatingPromoBanners() {
   }, 9000);
 }
 
+/* ---------- Periodic Floating Social Popup (Muncul beberapa saat, hilang, lalu muncul lagi) ---------- */
+function initPeriodicSocialPopup() {
+  const popup = document.getElementById('floatingSocialPopup');
+  const closeBtn = document.getElementById('fspClose');
+  if (!popup) return;
+
+  popup.style.display = 'block';
+
+  let isDismissedByUser = false;
+  let timerId = null;
+
+  function showPopup() {
+    if (isDismissedByUser) return;
+    popup.classList.add('fsp-visible');
+
+    // Tampil selama 7 detik, lalu menghilang otomatis agar tidak mengganggu pembaca
+    timerId = setTimeout(() => {
+      hidePopup(false);
+    }, 7000);
+  }
+
+  function hidePopup(isManualClose = false) {
+    popup.classList.remove('fsp-visible');
+    clearTimeout(timerId);
+
+    if (isManualClose) {
+      // Jika pengguna menekan tombol silang, jeda lebih lama (30 detik) sebelum muncul lagi
+      timerId = setTimeout(() => {
+        isDismissedByUser = false;
+        showPopup();
+      }, 30000);
+    } else {
+      // Jika menghilang otomatis, jeda 12 detik lalu muncul lagi
+      timerId = setTimeout(() => {
+        showPopup();
+      }, 12000);
+    }
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isDismissedByUser = true;
+      hidePopup(true);
+    });
+  }
+
+  // Muncul pertama kali 3.5 detik setelah halaman dimuat
+  setTimeout(() => {
+    showPopup();
+  }, 3500);
+}
+
 /* ---------- DOM Ready Bootstrap ---------- */
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-slider]').forEach(initSlider);
@@ -600,4 +653,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initFontResizer();
   initShareButtons();
   initRotatingPromoBanners();
+  initPeriodicSocialPopup();
 });
