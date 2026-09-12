@@ -485,6 +485,105 @@ function initVideoModal() {
   });
 }
 
+/* ---------- Rotating Self-Promotion Ads (Patchwork, TikTok Profile, TikTok VT, Instagram) ---------- */
+function initRotatingPromoBanners() {
+  const banners = document.querySelectorAll('.promo-banner-card[data-rotating="true"]');
+  if (!banners.length) return;
+
+  const promoVariants = [
+    {
+      theme: 'tiktok',
+      url: 'https://www.tiktok.com/@kestylein',
+      badge: 'TIKTOK OFFICIAL · FOLLOW US',
+      title: 'Ikuti @kestylein di TikTok untuk Konten Viral',
+      desc: 'Dapatkan update video gaya hidup, rekomendasi produk tren, dan inspirasi harian terbaru langsung di feed Anda.',
+      btnText: 'Follow @kestylein',
+      iconSvg: '<svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>'
+    },
+    {
+      theme: 'tiktok',
+      url: 'https://vt.tiktok.com/ZSqurE4nS/',
+      badge: 'VIDEO VIRAL PILIHAN · TIKTOK',
+      title: 'Tonton Video Viral Paling Ramai di TikTok Sekarang',
+      desc: 'Klik untuk menyaksikan tayangan eksklusif video viral pilihan @kestylein yang sedang ramai diperbincangkan netizen.',
+      btnText: 'Tonton Video VT ↗',
+      iconSvg: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
+    },
+    {
+      theme: 'instagram',
+      url: 'https://www.instagram.com/khairindtz?stkn=c2I4c2diYmYybGxh',
+      badge: 'INSTAGRAM OFFICIAL · FOLLOW US',
+      title: 'Terhubung dengan @khairindtz di Instagram',
+      desc: 'Temukan cuplikan stories harian, portofolio visual, inspirasi konten kekinian, dan interaksi langsung bersama kami.',
+      btnText: 'Follow Instagram ↗',
+      iconSvg: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>'
+    },
+    {
+      theme: 'tiktok',
+      url: 'https://vt.tiktok.com/ZSqurn8XH/',
+      badge: 'TRENDING TIKTOK · KONTEN PILIHAN',
+      title: 'Saksikan Tayangan Viral Terbaru @kestylein',
+      desc: 'Tonton konten seru dan rekomendasi eksklusif dengan ribuan interaksi dari penonton di seluruh Indonesia.',
+      btnText: 'Putar di TikTok ↗',
+      iconSvg: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
+    },
+    {
+      theme: 'patchwork',
+      url: 'https://patchwork.kheireditz.my.id/',
+      badge: 'REKOMENDASI BELANJA VIRAL · PATCHWORK',
+      title: 'Temukan Produk Viral TikTok & Shopee di Patchwork',
+      desc: 'Kurasi produk trending terpercaya, diskon eksklusif, serta ulasan jujur untuk belanja hemat dan cerdas.',
+      btnText: 'Buka Katalog Patchwork ↗',
+      iconSvg: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>'
+    }
+  ];
+
+  // Choose a random starting variant on load for natural rotation
+  let currentIndex = Math.floor(Math.random() * promoVariants.length);
+
+  function applyVariant(banner, item, animate = false) {
+    const inner = banner.querySelector('.promo-banner-inner');
+    const badgeEl = banner.querySelector('.promo-badge-text');
+    const titleEl = banner.querySelector('.promo-banner-title');
+    const descEl = banner.querySelector('.promo-banner-desc');
+    const btnEl = banner.querySelector('.promo-banner-btn-text');
+    const iconEl = banner.querySelector('.promo-banner-icon');
+
+    const updateDom = () => {
+      banner.href = item.url;
+      banner.setAttribute('data-theme', item.theme);
+      banner.setAttribute('title', item.title);
+      if (badgeEl) badgeEl.textContent = item.badge;
+      if (titleEl) titleEl.innerHTML = item.title;
+      if (descEl) descEl.textContent = item.desc;
+      if (btnEl) btnEl.textContent = item.btnText;
+      if (iconEl) iconEl.innerHTML = item.iconSvg;
+    };
+
+    if (animate && inner) {
+      inner.classList.add('is-switching');
+      setTimeout(() => {
+        updateDom();
+        inner.classList.remove('is-switching');
+      }, 250);
+    } else {
+      updateDom();
+    }
+  }
+
+  banners.forEach(banner => {
+    applyVariant(banner, promoVariants[currentIndex], false);
+  });
+
+  // Rotate smoothly every 9 seconds
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % promoVariants.length;
+    banners.forEach(banner => {
+      applyVariant(banner, promoVariants[currentIndex], true);
+    });
+  }, 9000);
+}
+
 /* ---------- DOM Ready Bootstrap ---------- */
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-slider]').forEach(initSlider);
@@ -500,4 +599,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initBackToTop();
   initFontResizer();
   initShareButtons();
+  initRotatingPromoBanners();
 });
