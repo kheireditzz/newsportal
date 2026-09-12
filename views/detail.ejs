@@ -1,3 +1,26 @@
+<!-- Schema.org NewsArticle Structured Data for Google Search & News -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "headline": <%= JSON.stringify(article.title) %>,
+  "description": <%= JSON.stringify(article.excerpt || article.title) %>,
+  "image": [
+    "<%= (typeof fullUrl !== 'undefined' ? fullUrl.replace(/\/berita\/.*/, '') : '') %>/uploads/<%= article.image || 'images/art-1.svg' %>"
+  ],
+  "datePublished": "<%= new Date(String(article.published_at || article.created_at || '').replace(' ', 'T')).toISOString() %>",
+  "dateModified": "<%= new Date(String(article.updated_at || article.published_at || article.created_at || '').replace(' ', 'T')).toISOString() %>",
+  "author": [{
+    "@type": "Person",
+    "name": "<%= article.author_name || 'Redaksi Nusantara' %>"
+  }],
+  "publisher": {
+    "@type": "NewsMediaOrganization",
+    "name": "<%= settings.site_name || 'Nusantara News' %>"
+  }
+}
+</script>
+
 <section class="page-hero" style="padding:28px 0 32px">
   <div class="container">
     <nav class="crumbs" aria-label="Breadcrumb">

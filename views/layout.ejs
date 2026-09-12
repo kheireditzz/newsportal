@@ -4,11 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><%= title ? title + ' — ' + (settings.site_name || 'Nusantara News') : (settings.site_name || 'Nusantara News') %></title>
-<meta name="description" content="<%= settings.description || '' %>">
+<meta name="description" content="<%= settings.description || 'Portal berita terkini, akurat, dan terpercaya menyajikan informasi nasional dan mancanegara.' %>">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta property="og:locale" content="id_ID">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="<%= settings.site_name || 'Nusantara News' %>">
+<meta property="og:title" content="<%= title ? title + ' — ' + (settings.site_name || 'Nusantara News') : (settings.site_name || 'Nusantara News') %>">
+<meta property="og:description" content="<%= settings.description || 'Portal berita terkini, akurat, dan terpercaya.' %>">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= title ? title + ' — ' + (settings.site_name || 'Nusantara News') : (settings.site_name || 'Nusantara News') %>">
+<meta name="twitter:description" content="<%= settings.description || 'Portal berita terkini dan terpercaya.' %>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css">
+<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+<link rel="alternate" type="application/rss+xml" title="RSS Feed <%= settings.site_name || 'Nusantara News' %>" href="/rss">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%231e3a8a'/%3E%3Cpath fill='%23fff' d='M6 6h9l3 3v9H6z'/%3E%3Cpath fill='%231e3a8a' d='M8 9h5v1.5H8zm0 3h8v1.5H8zm0 3h5v1.5H8z'/%3E%3C/svg%3E">
 <script>
   (function() {

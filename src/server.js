@@ -353,6 +353,72 @@ app.get('/galeri', (req, res) => {
 
 app.get('/tentang', (req, res) => render(res, 'tentang', { title: 'Tentang Kami', active: 'tentang' }));
 
+/* ============================ SEO & GOOGLE CRAWLER ============================ */
+
+app.get('/robots.txt', (req, res) => {
+  const base = `${req.protocol}://${req.get('host')}`;
+  const robots = `User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: ${base}/sitemap.xml
+`;
+  res.type('text/plain').send(robots);
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  const base = `${req.protocol}://${req.get('host')}`;
+  const articles = db.prepare("SELECT slug, updated_at, published_at FROM articles WHERE status = 'published' ORDER BY published_at DESC").all();
+  const categories = db.prepare("SELECT slug FROM categories").all();
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${base}/</loc>
+    <changefreq>always</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${base}/berita</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${base}/video</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${base}/galeri</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+
+  categories.forEach(c => {
+    xml += `
+  <url>
+    <loc>${base}/kategori/${c.slug}</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+  });
+
+  articles.forEach(a => {
+    const d = (a.updated_at || a.published_at || new Date().toISOString()).slice(0, 10);
+    xml += `
+  <url>
+    <loc>${base}/berita/${a.slug}</loc>
+    <lastmod>${d}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+  });
+
+  xml += `\n</urlset>`;
+  res.type('application/xml').send(xml);
+});
+
 app.get('/rss', (req, res) => {
   const site = helpers.getSettings();
   const base = `${req.protocol}://${req.get('host')}`;
