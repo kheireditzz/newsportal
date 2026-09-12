@@ -12,6 +12,8 @@
 <meta property="og:site_name" content="<%= settings.site_name || 'Nusantara News' %>">
 <meta property="og:title" content="<%= title ? title + ' — ' + (settings.site_name || 'Nusantara News') : (settings.site_name || 'Nusantara News') %>">
 <meta property="og:description" content="<%= settings.description || 'Portal berita terkini, akurat, dan terpercaya.' %>">
+<link rel="canonical" href="<%= canonical %>">
+<meta property="og:url" content="<%= canonical %>">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<%= title ? title + ' — ' + (settings.site_name || 'Nusantara News') : (settings.site_name || 'Nusantara News') %>">
 <meta name="twitter:description" content="<%= settings.description || 'Portal berita terkini dan terpercaya.' %>">

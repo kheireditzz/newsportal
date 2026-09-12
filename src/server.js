@@ -34,6 +34,10 @@ app.use((req, res, next) => {
   res.locals.settings = helpers.getSettings();
   res.locals.categories = db.prepare('SELECT * FROM categories ORDER BY sort_order, name').all();
   res.locals.query = req.query;
+  const host = req.get('host') || 'nusantara-berita.kheireditz.my.id';
+  const proto = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : (host.includes('localhost') ? 'http' : 'https');
+  res.locals.canonical = `${proto}://${host}${req.path}`;
+  res.locals.fullUrl = `${proto}://${host}${req.originalUrl}`;
   next();
 });
 
