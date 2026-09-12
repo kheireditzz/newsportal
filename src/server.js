@@ -324,7 +324,21 @@ app.get('/berita/:slug', (req, res) => {
     SELECT a.*, c.name AS category_name FROM articles a LEFT JOIN categories c ON c.id = a.category_id
     WHERE a.status = 'published' ORDER BY a.views DESC LIMIT 5`).all();
 
-  render(res, 'detail', { title: article.title, active: 'berita', article, related, popular });
+  const imgPath = helpers.imgUrl(article.image);
+  const host = req.get('host') || 'nusantara-berita.kheireditz.my.id';
+  const proto = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : (host.includes('localhost') ? 'http' : 'https');
+  const ogImage = imgPath.startsWith('http') ? imgPath : `${proto}://${host}${imgPath}`;
+
+  render(res, 'detail', {
+    title: article.title,
+    active: 'berita',
+    article,
+    related,
+    popular,
+    ogImage,
+    ogType: 'article',
+    ogDescription: article.excerpt || article.title
+  });
 });
 
 app.get('/kategori/:slug', (req, res) => {

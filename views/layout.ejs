@@ -8,15 +8,20 @@
 <meta name="google-site-verification" content="TPxLlLXWDP5INBgk6P69qtc4xEDxj_64NuCPS7tRCvI" />
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
 <meta property="og:locale" content="id_ID">
-<meta property="og:type" content="website">
+<meta property="og:type" content="<%= (typeof ogType !== 'undefined' && ogType) ? ogType : 'website' %>">
 <meta property="og:site_name" content="<%= settings.site_name || 'Nusantara News' %>">
 <meta property="og:title" content="<%= title ? title + ' — ' + (settings.site_name || 'Nusantara News') : (settings.site_name || 'Nusantara News') %>">
-<meta property="og:description" content="<%= settings.description || 'Portal berita terkini, akurat, dan terpercaya.' %>">
+<meta property="og:description" content="<%= (typeof ogDescription !== 'undefined' && ogDescription) ? ogDescription : (settings.description || 'Portal berita terkini, akurat, dan terpercaya.') %>">
 <link rel="canonical" href="<%= canonical %>">
 <meta property="og:url" content="<%= canonical %>">
+<meta property="og:image" content="<%= (typeof ogImage !== 'undefined' && ogImage) ? ogImage : 'https://nusantara-berita.kheireditz.my.id/icon-512.png' %>">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<%= title ? title + ' — ' + (settings.site_name || 'Nusantara News') : (settings.site_name || 'Nusantara News') %>">
-<meta name="twitter:description" content="<%= settings.description || 'Portal berita terkini dan terpercaya.' %>">
+<meta name="twitter:description" content="<%= (typeof ogDescription !== 'undefined' && ogDescription) ? ogDescription : (settings.description || 'Portal berita terkini dan terpercaya.') %>">
+<meta name="twitter:image" content="<%= (typeof ogImage !== 'undefined' && ogImage) ? ogImage : 'https://nusantara-berita.kheireditz.my.id/icon-512.png' %>">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -24,6 +29,8 @@
 <!-- Adcash Anti-Adblock Core Library (Rotated Static CDN) -->
 <script type="text/javascript" src="/js/t48s7z.js"></script>
 <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+<link rel="alternate" type="application/rss+xml" title="RSS Feed <%= settings.site_name || 'Nusantara News' %>" href="/rss">
+
 <!-- Favicons & App Icons for Web Browser & Google Search Results -->
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
@@ -34,7 +41,6 @@
 <meta name="msapplication-TileImage" content="/icon-192.png">
 <meta name="msapplication-TileColor" content="#1e3a8a">
 <meta name="theme-color" content="#1e3a8a">
-<meta property="og:image" content="https://nusantara-berita.kheireditz.my.id/icon-512.png">
 
 <!-- Google Rich Results / Search Appearance Schema (Site Logo & Organization) -->
 <script type="application/ld+json">

@@ -351,24 +351,63 @@ function initFontResizer() {
 /* ---------- Social Share Buttons ---------- */
 function initShareButtons() {
   const btnCopy = document.getElementById('btnCopyLink');
-  if (!btnCopy) return;
-  btnCopy.addEventListener('click', async () => {
-    const url = window.location.href;
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(url);
-      } else {
-        const temp = document.createElement('input');
-        temp.value = url;
-        document.body.appendChild(temp);
-        temp.select();
-        document.execCommand('copy');
-        document.body.removeChild(temp);
+  if (btnCopy) {
+    btnCopy.addEventListener('click', async () => {
+      const url = window.location.href;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+        } else {
+          const temp = document.createElement('input');
+          temp.value = url;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          document.body.removeChild(temp);
+        }
+        showToast('Tautan artikel berhasil disalin!');
+      } catch (err) {
+        showToast('Gagal menyalin tautan');
       }
-      showToast('Tautan artikel berhasil disalin!');
-    } catch (err) {
-      showToast('Gagal menyalin tautan');
-    }
+    });
+  }
+
+  const btnNative = document.getElementById('btnNativeShare');
+  if (btnNative) {
+    btnNative.addEventListener('click', async () => {
+      const title = document.title || 'Nusantara News';
+      const url = window.location.href;
+      const text = document.querySelector('.article-lead')?.textContent || title;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title, text, url });
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            btnCopy?.click();
+          }
+        }
+      } else {
+        btnCopy?.click();
+      }
+    });
+  }
+
+  // Support quick-share buttons on cards if present
+  document.querySelectorAll('.card-share-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const title = btn.dataset.title || '';
+      const url = btn.dataset.url ? (window.location.origin + btn.dataset.url) : window.location.href;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title, url });
+        } catch (err) {}
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+        showToast('Link berita disalin!');
+      }
+    });
   });
 }
 
