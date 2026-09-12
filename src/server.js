@@ -23,6 +23,9 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(config.root, 'public')));
+if (process.env.VERCEL) {
+  app.use('/uploads', express.static(config.uploads));
+}
 
 app.use((req, res, next) => {
   res.locals.h = helpers;
