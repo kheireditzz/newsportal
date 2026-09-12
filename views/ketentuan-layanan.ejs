@@ -1,0 +1,77 @@
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Beranda</a> / Persyaratan Layanan</div>
+    <h1>Persyaratan Layanan &amp; Pedoman Media Siber</h1>
+    <p>Ketentuan penggunaan layanan dan standar jurnalistik <%= settings.site_name || 'Nusantara News' %></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="layout-2col">
+      <div class="article-wrap" style="max-width:100%">
+        <div class="article-content">
+          <p><strong>Terakhir diperbarui: <%= h.formatDate(new Date().toISOString().slice(0,10)) %></strong></p>
+
+          <p>Selamat datang di portal berita <strong><%= settings.site_name || 'Nusantara News' %></strong> (<a href="<%= canonical %>"><%= canonical %></a>). Dengan mengakses, menjelajahi, dan menggunakan layanan yang disediakan di situs ini, Anda secara sadar menyetujui untuk terikat oleh Syarat dan Ketentuan Layanan serta Pedoman Pemberitaan Media Siber berikut.</p>
+
+          <h2>1. Pedoman Pemberitaan Media Siber (Dewan Pers)</h2>
+          <p><%= settings.site_name || 'Nusantara News' %> tunduk dan menjalankan operasional redaksi dengan merujuk sepenuhnya pada <strong>Undang-Undang Pers No. 40 Tahun 1999</strong>, <strong>Kode Etik Jurnalistik (KEJ)</strong>, serta <strong>Pedoman Pemberitaan Media Siber</strong> yang ditetapkan oleh Dewan Pers:</p>
+          <ul>
+            <li><strong>Verifikasi dan Keberimbangan Berita:</strong> Setiap berita yang disiarkan diupayakan melalui proses verifikasi fakta dan konfirmasi dari pihak terkait untuk menjaga akurasi serta keberimbangan liputan.</li>
+            <li><strong>Hak Jawab, Koreksi, dan Ralat:</strong> Redaksi melayani hak jawab dan hak koreksi dari pihak yang merasa dirugikan oleh materi pemberitaan. Ralat dan pembaruan akan disematkan secara terbuka dan proporsional pada artikel bersangkutan.</li>
+            <li><strong>Pencabutan Berita:</strong> Berita yang telah dipublikasikan tidak dapat dicabut secara sepihak kecuali terkait pelanggaran SARA, privasi anak/korban kekerasan seksual, atau atas rekomendasi Dewan Pers dan putusan pengadilan yang berkekuatan hukum tetap.</li>
+          </ul>
+
+          <h2>2. Hak Cipta dan Kekayaan Intelektual</h2>
+          <p>Seluruh materi publikasi di situs ini—termasuk teks artikel, data riset, liputan investigasi, grafis, tata letak, dan materi video—dilindungi oleh Undang-Undang Hak Cipta Republik Indonesia:</p>
+          <ul>
+            <li>Pembaca diperkenankan membagikan tautan (link sharing) atau mengutip sebagian kecil tulisan dengan <strong>mewajibkan pencantuman sumber tautan aktif ke artikel asli di <%= settings.site_name || 'Nusantara News' %></strong>.</li>
+            <li>Dilarang keras menyalin utuh (copy-paste massal), memodifikasi, mendistribusikan ulang, atau mengkomersialkan seluruh isi pemberitaan kami secara otomatis atau manual tanpa izin tertulis dari manajemen redaksi.</li>
+          </ul>
+
+          <h2>3. Ketentuan Komentar Pembaca (User Generated Content)</h2>
+          <p>Kami menyambut dialog yang konstruktif melalui fitur komentar. Namun, pengguna bertanggung jawab penuh secara hukum atas komentar yang dikirimkan. Redaksi berhak menyunting atau menghapus komentar yang mengandung unsur:</p>
+          <ul>
+            <li>Fitnah, pencemaran nama baik, ujaran kebencian, atau diskriminasi SARA.</li>
+            <li>Penyebaran informasi hoaks, disinformasi, atau pornografi.</li>
+            <li>Pesan spam, tautan promosi liar, atau phishing.</li>
+          </ul>
+
+          <h2>4. Penafian Tanggung Jawab (Disclaimer)</h2>
+          <p>Informasi yang disajikan dalam rubrik opini, kolom pakar, atau komentar pembaca adalah pandangan pribadi penulisnya dan tidak serta-merta mencerminkan pandangan resmi institusi redaksi. Kami berusaha menyajikan informasi seakurat mungkin saat diterbitkan, namun tidak bertanggung jawab atas kerugian materiil maupun immateriil akibat penggunaan informasi dari situs ini tanpa konfirmasi lebih lanjut.</p>
+
+          <h2>5. Tautan ke Situs Eksternal</h2>
+          <p>Artikel kami dapat memuat tautan rujukan menuju situs resmi institusi atau sumber berita eksternal. Kami tidak memiliki kendali penuh atas isi atau kebijakan privasi situs pihak ketiga tersebut.</p>
+
+          <h2>6. Perubahan Ketentuan</h2>
+          <p>Manajemen <%= settings.site_name || 'Nusantara News' %> berhak melakukan pembaruan atas Persyaratan Layanan ini sewaktu-waktu demi mematuhi regulasi hukum terbaru atau meningkatkan standar operasional jurnalisme kami.</p>
+
+          <h2>7. Saluran Pengaduan &amp; Kontak Redaksi</h2>
+          <p>Apabila Anda memiliki pertanyaan, aduan sengketa pemberitaan, atau ingin menggunakan Hak Jawab, silakan layangkan permohonan resmi kepada Dewan Redaksi kami:</p>
+          <ul>
+            <li><strong>Email Redaksi:</strong> <%= settings.email || 'redaksi@nusantara-berita.kheireditz.my.id' %></li>
+            <li><strong>Kontak WhatsApp:</strong> <%= settings.phone || '+62' %></li>
+            <li><strong>Kantor:</strong> <%= settings.address || 'Indonesia' %></li>
+          </ul>
+        </div>
+      </div>
+
+      <aside>
+        <div class="widget">
+          <h3 class="widget-title">Pilar Standar Kami</h3>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;font-size:14px">
+            <li><a href="/ketentuan-layanan" style="font-weight:700;color:var(--primary)">• Pedoman &amp; Ketentuan Layanan</a></li>
+            <li><a href="/kebijakan-privasi" style="color:var(--text)">• Kebijakan Privasi</a></li>
+            <li><a href="/tentang" style="color:var(--text)">• Profil &amp; Visi Misi</a></li>
+            <li><a href="/kontak" style="color:var(--text)">• Kontak Redaksi</a></li>
+          </ul>
+        </div>
+        <div class="widget">
+          <h3 class="widget-title">Kepatuhan Hukum</h3>
+          <p style="font-size:14px;color:var(--muted);line-height:1.7">Setiap karya jurnalistik kami berpegang teguh pada prinsip keterbukaan, akurasi fakta, dan perlindungan hak pembaca sesuai aturan hukum yang berlaku.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

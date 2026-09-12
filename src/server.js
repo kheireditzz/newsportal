@@ -358,6 +358,8 @@ app.get('/galeri', (req, res) => {
 });
 
 app.get('/tentang', (req, res) => render(res, 'tentang', { title: 'Tentang Kami', active: 'tentang' }));
+app.get('/kebijakan-privasi', (req, res) => render(res, 'kebijakan-privasi', { title: 'Kebijakan Privasi', active: 'kebijakan-privasi' }));
+app.get('/ketentuan-layanan', (req, res) => render(res, 'ketentuan-layanan', { title: 'Persyaratan Layanan', active: 'ketentuan-layanan' }));
 
 /* ============================ SEO & GOOGLE CRAWLER ============================ */
 
@@ -405,6 +407,26 @@ app.get('/sitemap.xml', (req, res) => {
     <loc>${base}/galeri</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${base}/tentang</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>${base}/kontak</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>${base}/kebijakan-privasi</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>${base}/ketentuan-layanan</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>`;
 
   categories.forEach(c => {

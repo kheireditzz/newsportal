@@ -1,0 +1,84 @@
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Beranda</a> / Kebijakan Privasi</div>
+    <h1>Kebijakan Privasi</h1>
+    <p>Komitmen kami dalam menjaga kerahasiaan dan keamanan data pengunjung <%= settings.site_name || 'Nusantara News' %></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="layout-2col">
+      <div class="article-wrap" style="max-width:100%">
+        <div class="article-content">
+          <p><strong>Terakhir diperbarui: <%= h.formatDate(new Date().toISOString().slice(0,10)) %></strong></p>
+
+          <p>Selamat datang di <strong><%= settings.site_name || 'Nusantara News' %></strong> (dapat diakses melalui <a href="<%= canonical %>"><%= canonical %></a>). Kami sangat menghargai privasi setiap pengunjung dan pembaca setia kami. Dokumen Kebijakan Privasi ini menerangkan jenis data dan informasi pribadi yang kami kumpulkan, bagaimana informasi tersebut digunakan, dilindungi, serta hak-hak Anda terkait data tersebut sesuai dengan peraturan perundang-undangan Republik Indonesia (termasuk UU Perlindungan Data Pribadi / UU PDP) dan standar internasional yang berlaku.</p>
+
+          <h2>1. Informasi yang Kami Kumpulkan</h2>
+          <p>Saat Anda mengakses dan menggunakan layanan di situs kami, kami dapat mengumpulkan informasi dalam kategori berikut:</p>
+          <ul>
+            <li><strong>Data yang Anda Berikan Secara Sukarela:</strong> Nama, alamat email, dan pesan saat Anda menghubungi kami melalui formulir kontak redaksi atau saat Anda meninggalkan komentar pada artikel.</li>
+            <li><strong>Log File &amp; Data Teknis:</strong> Seperti situs berita profesional pada umumnya, server kami secara otomatis mencatat berkas log kunjungan. Data ini mencakup alamat protokol internet (IP address), jenis peramban (browser), penyedia layanan internet (ISP), rujukan tautan (referring pages), stempel tanggal/waktu kunjungan, dan jumlah klik untuk menganalisis tren performa serta mengamankan situs dari serangan siber.</li>
+            <li><strong>Cookies dan Penyimpanan Lokal:</strong> Kami menggunakan cookie untuk menyimpan preferensi pengunjung (seperti mode tampilan gelap/terang) dan mencatat informasi sesi pembaca guna menyajikan pengalaman membaca yang lebih cepat dan nyaman.</li>
+          </ul>
+
+          <h2>2. Penggunaan Informasi</h2>
+          <p>Informasi yang kami kumpulkan dipergunakan secara etis dan bertanggung jawab untuk:</p>
+          <ul>
+            <li>Menyajikan, mengoperasikan, memelihara, dan mengoptimalkan performa portal berita kami.</li>
+            <li>Memahami dan menganalisis bagaimana pembaca menavigasi konten kami untuk menghasilkan liputan dan rubrik yang lebih relevan.</li>
+            <li>Membalas pesan, masukan, tanggapan, atau permohonan hak jawab dari pembaca.</li>
+            <li>Mencegah aktivitas mencurigakan, spam, manipulasi trafik, atau serangan siber pada infrastruktur portal.</li>
+          </ul>
+
+          <h2>3. Layanan Pihak Ketiga dan Iklan Digital</h2>
+          <p>Situs kami dapat menggunakan integrasi layanan pihak ketiga terpercaya guna mendukung operasional jurnalistik, termasuk:</p>
+          <ul>
+            <li><strong>Google News &amp; Subscribe with Google (SwG):</strong> Kami terhubung dengan ekosistem Google News guna mempermudah langganan bacaan dan verifikasi pembaca. Layanan ini tunduk pada kebijakan privasi Google secara independen.</li>
+            <li><strong>Jaringan Iklan Digital Terprogram:</strong> Pihak ketiga penyedia jaringan periklanan (seperti Google AdSense atau mitra periklanan resmi lainnya) dapat menggunakan cookie, web beacon, atau JavaScript untuk mengukur efektivitas materi iklan yang ditayangkan. <%= settings.site_name || 'Nusantara News' %> tidak memiliki akses langsung terhadap kontrol cookie yang diterapkan oleh pengiklan pihak ketiga tersebut. Anda dapat mengatur preferensi cookie melalui setelan peramban masing-masing.</li>
+            <li><strong>Penyedia Analisis Trafik:</strong> Kami menggunakan alat analitik untuk mengukur jumlah pembaca tanpa mengidentifikasi individu secara personal.</li>
+          </ul>
+
+          <h2>4. Perlindungan Data Pribadi</h2>
+          <p>Kami menerapkan standar enkripsi SSL/TLS (HTTPS) serta pengamanan basis data berjenjang untuk mencegah kebocoran, penyalahgunaan, atau perubahan data yang tidak sah. Kami berkomitmen untuk <strong>tidak pernah menjual, menyewakan, atau memperjualbelikan data pribadi Anda</strong> kepada pihak ketiga mana pun tanpa persetujuan eksplisit dari Anda, kecuali diwajibkan oleh proses hukum yang sah di Republik Indonesia.</p>
+
+          <h2>5. Hak-Hak Pembaca (Data Rights)</h2>
+          <p>Sesuai hukum yang berlaku, setiap pembaca memiliki hak untuk:</p>
+          <ul>
+            <li>Meminta konfirmasi apakah data pribadi Anda disimpan dalam sistem kami.</li>
+            <li>Meminta koreksi atau pembaruan terhadap data kontak atau komentar Anda yang keliru.</li>
+            <li>Meminta penghapusan data kontak atau komentar publik Anda dari arsip portal berita kami.</li>
+          </ul>
+
+          <h2>6. Perubahan Kebijakan Privasi</h2>
+          <p>Kami dapat memperbarui dokumen Kebijakan Privasi ini sewaktu-waktu untuk menyesuaikan perkembangan teknologi, perundang-undangan, atau fitur situs. Setiap pembaruan akan langsung ditampilkan pada halaman ini dengan tanggal revisi terbaru.</p>
+
+          <h2>7. Kontak Redaksi &amp; Perlindungan Data</h2>
+          <p>Jika Anda memiliki pertanyaan, keberatan, atau ingin mengajukan permohonan terkait data pribadi Anda, silakan hubungi tim hukum dan redaksi kami melalui:</p>
+          <ul>
+            <li><strong>Email:</strong> <%= settings.email || 'redaksi@nusantara-berita.kheireditz.my.id' %></li>
+            <li><strong>Alamat Kantor:</strong> <%= settings.address || 'Jakarta, Indonesia' %></li>
+            <li><strong>Kontak WhatsApp:</strong> <%= settings.phone || '+62' %></li>
+          </ul>
+        </div>
+      </div>
+
+      <aside>
+        <div class="widget">
+          <h3 class="widget-title">Kebijakan Publikasi</h3>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;font-size:14px">
+            <li><a href="/kebijakan-privasi" style="font-weight:700;color:var(--primary)">• Kebijakan Privasi</a></li>
+            <li><a href="/ketentuan-layanan" style="color:var(--text)">• Pedoman &amp; Ketentuan Layanan</a></li>
+            <li><a href="/tentang" style="color:var(--text)">• Tentang Redaksi</a></li>
+            <li><a href="/kontak" style="color:var(--text)">• Hak Jawab &amp; Kontak</a></li>
+          </ul>
+        </div>
+        <div class="widget">
+          <h3 class="widget-title">Transparansi</h3>
+          <p style="font-size:14px;color:var(--muted);line-height:1.7">Kami menjunjung tinggi etika jurnalistik profesional, keterbukaan informasi publik, dan perlindungan privasi seluruh pembaca di era digital.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
