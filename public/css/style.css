@@ -1415,15 +1415,64 @@ body.zen-focus-mode {
   .card, .widget, .form-card { border-width: 2px; }
 }
 
-/* ---------- Print ---------- */
+/* ---------- Clean Non-Intrusive Ad Slots ---------- */
+.ad-slot-wrapper {
+  margin: 32px auto;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.ad-slot-card {
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px 12px 16px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s ease;
+}
+.ad-slot-card:hover {
+  border-color: #94a3b8;
+}
+.ad-slot-label {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.ad-slot-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+.ad-slot-content iframe {
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+.widget-ad {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 24px;
+}
+.widget-ad .ad-slot-card {
+  background: var(--surface-2);
+  padding: 10px 8px;
+}
 @media print {
-  .topbar, .site-header, .ticker, .trending-bar, .search-panel, .site-footer,
-  .back-to-top, .site-toast, .reader-toolbar, .share-bar, .reading-progress,
-  .main-nav, .header-actions, aside, .section-head .section-more { display: none !important; }
-  body { background: #fff; color: #000; }
-  .article-wrap { max-width: 100%; }
-  .article-content { font-size: 12pt; line-height: 1.6; }
-  .article-content > p:first-of-type::first-letter { font-size: 3em; color: #000; }
-  .article-hero-img img { max-height: 300px; }
-  a { text-decoration: underline; }
+  .ad-slot-wrapper, .widget-ad { display: none !important; }
 }
