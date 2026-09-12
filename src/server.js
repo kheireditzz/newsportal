@@ -361,6 +361,34 @@ app.get('/tentang', (req, res) => render(res, 'tentang', { title: 'Tentang Kami'
 app.get('/kebijakan-privasi', (req, res) => render(res, 'kebijakan-privasi', { title: 'Kebijakan Privasi', active: 'kebijakan-privasi' }));
 app.get('/ketentuan-layanan', (req, res) => render(res, 'ketentuan-layanan', { title: 'Persyaratan Layanan', active: 'ketentuan-layanan' }));
 
+/* Anti-Adblock Dynamic Library Proxy & Cache (Serverless Compatible) */
+let antiAdblockCache = { data: '', lastFetch: 0 };
+app.get('/js/assets-core.js', async (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
+  const now = Date.now();
+  if (antiAdblockCache.data && (now - antiAdblockCache.lastFetch < 300000)) {
+    return res.send(antiAdblockCache.data);
+  }
+  try {
+    const upstream = await fetch('https://adbpage.com/adblock?v=3&format=js&lnxv=2', {
+      headers: { 'User-Agent': req.headers['user-agent'] || 'Mozilla/5.0' },
+      signal: AbortSignal.timeout(6000)
+    });
+    if (upstream.ok) {
+      const text = await upstream.text();
+      if (text && text.length > 50) {
+        antiAdblockCache = { data: text, lastFetch: now };
+        return res.send(text);
+      }
+    }
+  } catch (err) {
+    console.warn('Anti-adblock fetch failed, falling back:', err.message);
+  }
+  if (antiAdblockCache.data) return res.send(antiAdblockCache.data);
+  res.send('/* assets-core */');
+});
+
 /* ============================ SEO & GOOGLE CRAWLER ============================ */
 
 function getBaseUrl(req) {
