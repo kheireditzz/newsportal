@@ -206,31 +206,41 @@
           </div>
         </div>
 
+        <% 
+          var shareUrl = (typeof fullUrl !== 'undefined' ? fullUrl : (typeof canonical !== 'undefined' ? canonical : ''));
+          var shareImg = (typeof ogImage !== 'undefined' && ogImage) ? ogImage : '';
+          var cleanExcerpt = (article.excerpt || h.truncate(article.content, 180)).replace(/<[^>]*>/g, '').trim();
+          var shareFullText = '*' + article.title + '*\n\n' + cleanExcerpt + '\n\n' + (shareImg ? '📸 Foto: ' + shareImg + '\n\n' : '') + '🌐 Baca selengkapnya di Nusantara News:\n' + shareUrl;
+        %>
         <!-- Social Share Bar -->
         <div class="share-bar">
-          <span class="share-title">Bagikan Berita:</span>
+          <span class="share-title">Bagikan Berita Lengkap:</span>
           <div class="share-btn-group">
-            <a class="share-btn share-wa" href="https://wa.me/?text=<%= encodeURIComponent(article.title + '\n' + (typeof fullUrl !== 'undefined' ? fullUrl : '')) %>" target="_blank" rel="noopener" aria-label="Bagikan ke WhatsApp" title="WhatsApp">
+            <a class="share-btn share-wa" href="https://wa.me/?text=<%= encodeURIComponent(shareFullText) %>" target="_blank" rel="noopener" aria-label="Bagikan Lengkap ke WhatsApp" title="WhatsApp (Judul + Isi + Foto + URL)">
               <%- h.icon('whatsapp', 17) %>
               <span>WhatsApp</span>
             </a>
-            <a class="share-btn share-x" href="https://twitter.com/intent/tweet?text=<%= encodeURIComponent(article.title) %>&url=<%= encodeURIComponent(typeof fullUrl !== 'undefined' ? fullUrl : '') %>" target="_blank" rel="noopener" aria-label="Bagikan ke X" title="X (Twitter)">
+            <a class="share-btn share-x" href="https://twitter.com/intent/tweet?text=<%= encodeURIComponent(article.title + ' — ' + cleanExcerpt) %>&url=<%= encodeURIComponent(shareUrl) %>" target="_blank" rel="noopener" aria-label="Bagikan ke X" title="X (Twitter)">
               <%- h.icon('x', 15) %>
               <span>X</span>
             </a>
-            <a class="share-btn share-fb" href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent(typeof fullUrl !== 'undefined' ? fullUrl : '') %>" target="_blank" rel="noopener" aria-label="Bagikan ke Facebook" title="Facebook">
+            <a class="share-btn share-fb" href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent(shareUrl) %>" target="_blank" rel="noopener" aria-label="Bagikan ke Facebook" title="Facebook">
               <%- h.icon('facebook', 17) %>
               <span>Facebook</span>
             </a>
-            <a class="share-btn share-tg" href="https://t.me/share/url?url=<%= encodeURIComponent(typeof fullUrl !== 'undefined' ? fullUrl : '') %>&text=<%= encodeURIComponent(article.title) %>" target="_blank" rel="noopener" aria-label="Bagikan ke Telegram" title="Telegram">
+            <a class="share-btn share-tg" href="https://t.me/share/url?url=<%= encodeURIComponent(shareUrl) %>&text=<%= encodeURIComponent('*' + article.title + '*\n' + cleanExcerpt) %>" target="_blank" rel="noopener" aria-label="Bagikan ke Telegram" title="Telegram">
               <%- h.icon('telegram', 17) %>
               <span>Telegram</span>
             </a>
-            <button type="button" class="share-btn share-copy" id="btnNativeShare" aria-label="Bagikan Sekarang" title="Bagikan Berita (Menu Ponsel/Browser)" style="background:var(--brand);color:#fff;border-color:var(--brand)">
+            <button type="button" class="share-btn share-copy" id="btnNativeShare" data-share-title="<%= article.title %>" data-share-text="<%= cleanExcerpt %>" data-share-url="<%= shareUrl %>" data-share-img="<%= shareImg %>" aria-label="Bagikan Lengkap Sekarang" title="Bagikan Berita Lengkap (Menu Ponsel/Browser)" style="background:var(--brand);color:#fff;border-color:var(--brand)">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-              <span>Bagikan</span>
+              <span>Bagikan Lengkap</span>
             </button>
-            <button type="button" class="share-btn share-copy" id="btnCopyLink" aria-label="Salin Tautan" title="Salin Tautan Artikel">
+            <button type="button" class="share-btn share-copy" id="btnCopyFullSummary" data-clipboard-text="<%= shareFullText %>" aria-label="Salin Berita Lengkap" title="Salin Ringkasan, Tautan &amp; Gambar">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <span>Salin Teks Lengkap</span>
+            </button>
+            <button type="button" class="share-btn share-copy" id="btnCopyLink" aria-label="Salin Tautan Saja" title="Salin Tautan Artikel">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
               <span>Salin Link</span>
             </button>

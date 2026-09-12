@@ -375,19 +375,55 @@ function initShareButtons() {
   const btnNative = document.getElementById('btnNativeShare');
   if (btnNative) {
     btnNative.addEventListener('click', async () => {
-      const title = document.title || 'Nusantara News';
-      const url = window.location.href;
-      const text = document.querySelector('.article-lead')?.textContent || title;
+      const title = btnNative.dataset.shareTitle || document.title || 'Nusantara News';
+      const url = btnNative.dataset.shareUrl || window.location.href;
+      const snippet = btnNative.dataset.shareText || document.querySelector('.article-lead')?.textContent || '';
+      const img = btnNative.dataset.shareImg || '';
+      
+      const fullText = snippet + (img ? '\n\n📸 Foto: ' + img : '');
+
       if (navigator.share) {
         try {
-          await navigator.share({ title, text, url });
+          await navigator.share({
+            title: title,
+            text: fullText,
+            url: url
+          });
         } catch (err) {
           if (err.name !== 'AbortError') {
             btnCopy?.click();
           }
         }
       } else {
-        btnCopy?.click();
+        const fullClipboard = '*' + title + '*\n\n' + fullText + '\n\n🌐 ' + url;
+        try {
+          await navigator.clipboard.writeText(fullClipboard);
+          showToast('Ringkasan berita lengkap berhasil disalin!');
+        } catch (e) {
+          btnCopy?.click();
+        }
+      }
+    });
+  }
+
+  const btnCopySummary = document.getElementById('btnCopyFullSummary');
+  if (btnCopySummary) {
+    btnCopySummary.addEventListener('click', async () => {
+      const textToCopy = btnCopySummary.dataset.clipboardText || '';
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(textToCopy);
+        } else {
+          const temp = document.createElement('textarea');
+          temp.value = textToCopy;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          document.body.removeChild(temp);
+        }
+        showToast('Berita lengkap (judul, isi, foto & link) berhasil disalin!');
+      } catch (err) {
+        showToast('Gagal menyalin teks');
       }
     });
   }
@@ -399,13 +435,17 @@ function initShareButtons() {
       e.stopPropagation();
       const title = btn.dataset.title || '';
       const url = btn.dataset.url ? (window.location.origin + btn.dataset.url) : window.location.href;
+      const card = btn.closest('.card');
+      const excerpt = card?.querySelector('.card-excerpt')?.textContent?.trim() || '';
+      const fullPayload = '*' + title + '*\n\n' + excerpt + '\n\n🌐 Baca selengkapnya: ' + url;
+
       if (navigator.share) {
         try {
-          await navigator.share({ title, url });
+          await navigator.share({ title, text: excerpt, url });
         } catch (err) {}
       } else if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(url);
-        showToast('Link berita disalin!');
+        await navigator.clipboard.writeText(fullPayload);
+        showToast('Berita lengkap & link berhasil disalin!');
       }
     });
   });
