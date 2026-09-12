@@ -1,0 +1,19 @@
+<% var first = (featured && featured[0]) || (latest && latest[0]); %>
+<% if (first) { %>
+<article class="card big">
+  <a href="/berita/<%= first.slug %>" class="card-media">
+    <img src="/uploads/<%= first.image %>" alt="<%= first.title %>">
+    <span class="badge-featured">HEADLINE</span>
+  </a>
+  <div class="card-body">
+    <h3 class="card-title"><a href="/berita/<%= first.slug %>"><%= first.title %></a></h3>
+    <p class="card-excerpt"><%= h.truncate(first.excerpt || first.content, 240) %></p>
+    <div class="card-meta">
+      <% if (first.category_name) { %><span class="badge badge-cat"><%= first.category_name %></span><% } %>
+      <span><%= h.formatDate(first.published_at || first.created_at, {time:true}) %></span>
+      <span class="dot"></span>
+      <span><%= Number(first.views || 0).toLocaleString('id-ID') %> kali dibaca</span>
+    </div>
+  </div>
+</article>
+<% } %>

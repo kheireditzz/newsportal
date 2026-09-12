@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= title ? title + ' — Admin ' + (settings.site_name || 'Nusantara News') : 'Admin ' + (settings.site_name || 'Nusantara News') %></title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Serif:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%23e3002b'/%3E%3Cpath fill='%23fff' d='M6 7h9l3 3v7H6z'/%3E%3Cpath fill='%23e3002b' d='M8 10h5v1.5H8zm0 3h8v1.5H8z'/%3E%3C/svg%3E">
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <%- body %>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<%
+  var editId = editing ? editing.id : null;
+%>
+<div class="page-head">
+  <div>
+    <h2>Kelola Slider</h2>
+    <div class="desc">Seret gagang ⠿ untuk mengatur urutan slide di beranda.</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head">
+      <h3><span class="hd-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 22h8M12 18v4"/></svg></span> Daftar Slider</h3>
+      <span class="badge badge-muted"><%= slides.length %> slide</span>
+    </div>
+    <div class="panel-body">
+      <% if (!slides.length) { %>
+        <div class="empty-state"><div class="big"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 8h5M2 16h5M17 8h5M17 16h5"/></svg></div>Belum ada slide.</div>
+      <% } else { %>
+      <div class="sortable-list" data-sortable data-sortable-url="/api/admin/reorder/slides">
+        <% slides.forEach(function(s, i){ %>
+        <div class="sortable-item" data-sort-id="<%= s.id %>" <%= String(s.id) === String(editId) ? 'style="border-color:var(--a-brand);box-shadow:0 0 0 3px rgba(227,0,43,.12)"' : '' %>>
+          <span class="drag-handle" title="Seret untuk mengurutkan" aria-label="Seret untuk mengurutkan">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="5" r="1.4"/><circle cx="15" cy="5" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="19" r="1.4"/><circle cx="15" cy="19" r="1.4"/></svg>
+          </span>
+          <span class="tab-num"><%= String(i + 1).padStart(2, '0') %></span>
+          <div class="cell-title">
+            <img class="thumb" src="/uploads/<%= s.image %>" alt="">
+            <div>
+              <b><a href="/admin/slide/<%= s.id %>/edit"><%= s.title %></a></b>
+              <small><%= h.truncate(s.subtitle, 50) %></small>
+            </div>
+          </div>
+          <% if (s.badge) { %><span class="badge badge-cat"><%= s.badge %></span><% } else { %><span class="badge badge-muted">—</span><% } %>
+          <div class="col-status">
+            <% if (s.active) { %><span class="badge badge-active">Aktif</span>
+            <% } else { %><span class="badge badge-inactive">Nonaktif</span><% } %>
+          </div>
+          <div class="col-meta">
+            <% if (s.show_image) { %><span class="badge badge-muted">+ Gambar</span><% } else { %><span class="badge badge-inactive">Tanpa Gambar</span><% } %>
+          </div>
+          <% if (s.link) { %><span class="mono text-muted nowrap" style="font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis"><%= s.link %></span><% } %>
+          <div class="cell-actions">
+            <a href="/admin/slide/<%= s.id %>/edit" class="btn btn-ghost btn-sm">Edit</a>
+            <form action="/admin/slide/<%= s.id %>/delete" method="POST" data-confirm="Hapus slide ini?">
+              <button class="btn btn-danger btn-sm btn-icon" type="submit" title="Hapus">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/></svg>
+              </button>
+            </form>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+      <div class="sortable-footer">
+        <span class="clean">Urutan tersimpan otomatis.</span>
+        <span class="dirty"><span class="dot dot-warn"></span> Menyimpan...</span>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="hd-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span> <%= editId ? 'Edit Slide' : 'Tambah Slide' %></h3>
+      </div>
+      <div class="panel-body">
+        <form action="<%= editId ? '/admin/slide/' + editing.id : '/admin/slide' %>" method="POST" enctype="multipart/form-data">
+          <div class="field">
+            <label for="title">Judul Slide <span class="req">*</span></label>
+            <input class="input" type="text" id="title" name="title" required placeholder="Judul utama slide" value="<%= editId ? editing.title : '' %>">
+          </div>
+          <div class="field">
+            <label for="subtitle">Subjudul</label>
+            <textarea class="textarea" id="subtitle" name="subtitle" style="min-height:72px" placeholder="Penjelasan singkat..."><%= editId ? (editing.subtitle || '') : '' %></textarea>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="badge">Badge</label>
+              <input class="input" type="text" id="badge" name="badge" placeholder="mis. UTAMA" value="<%= editId ? (editing.badge || '') : '' %>">
+            </div>
+            <div class="field">
+              <label for="sort_order">Urutan (opsional)</label>
+              <input class="input" type="number" id="sort_order" name="sort_order" value="<%= editId ? editing.sort_order : 0 %>" disabled>
+              <div class="hint">Urutan diatur lewat seret-and-lepas.</div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="link">Tautan</label>
+            <input class="input" type="text" id="link" name="link" placeholder="/kategori/nasional" value="<%= editId ? (editing.link || '') : '' %>">
+            <div class="hint">Tujuan saat slide diklik.</div>
+          </div>
+          <div class="field">
+            <label>Gambar Slide <span class="req">*</span></label>
+            <label class="img-drop">
+              <div class="prev" <% if (editId && editing.image) { %>style="background:url('/uploads/<%= editing.image %>') center/cover no-repeat;border:0"<% } %>><%= editId && editing.image ? '' : 'Klik untuk memilih gambar' %></div>
+              <input type="file" name="image" accept="image/*" <%= editId ? '' : 'required' %>>
+              <div class="txt"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3M17 8l-5-5-5 5M12 3v12"/></svg>Rasio lebar disarankan (16:9)</div>
+            </label>
+            <div class="v-stack" style="margin-top:10px">
+              <button type="button" class="btn btn-ghost btn-sm" data-edit-image data-preview="<%= editId && editing.image ? '/uploads/' + editing.image : '' %>">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/><path d="m15 5 4 4"/></svg>
+                Crop / Edit Gambar
+              </button>
+            </div>
+            <input class="input" type="text" name="image_url" placeholder="atau URL gambar" style="margin-top:12px" value="<%= editId ? (editing.image || '') : '' %>">
+            <%- include('../partials/media-editor', { editorId: 'media-editor-slide-' + (editId ? editing.id : 'new') }) %>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label class="switch">
+                <input type="checkbox" name="active" value="1" <%= !editId || editing.active ? 'checked' : '' %>>
+                <span class="track"></span>
+                <span class="switch-label">Tampilkan slide</span>
+              </label>
+            </div>
+            <div class="field">
+              <label class="switch">
+                <input type="checkbox" name="show_image" value="1" <%= !editId || editing.show_image ? 'checked' : '' %>>
+                <span class="track"></span>
+                <span class="switch-label">Tampilkan gambar</span>
+              </label>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-primary" type="submit">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              <%= editId ? 'Simpan Perubahan' : 'Tambah Slide' %>
+            </button>
+            <% if (editId) { %><a href="/admin/slide" class="btn btn-ghost">Batal</a><% } %>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

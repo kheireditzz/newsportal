@@ -1,0 +1,105 @@
+﻿<div class="page-head">
+  <div>
+    <h2>Kelola Pengguna</h2>
+    <div class="desc">Atur akses redaksi <strong><%= settings.site_name || 'Nusantara News' %></strong>.</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head">
+      <h3><span class="hd-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Daftar Pengguna</h3>
+      <span class="badge badge-muted"><%= users.length %> pengguna</span>
+    </div>
+    <div class="panel-body flush">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Pengguna</th><th>Email</th><th>Peran</th><th>Bergabung</th><th style="text-align:right">Aksi</th></tr>
+          </thead>
+          <tbody>
+            <% users.forEach(function(u){ %>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:11px">
+                  <span style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--a-brand),#ff4d6d);color:#fff;display:grid;place-items:center;font-weight:800;flex-shrink:0"><%= u.name.charAt(0).toUpperCase() %></span>
+                  <div>
+                    <b style="font-size:13.8px;color:var(--a-ink)"><%= u.name %></b>
+                    <% if (String(u.id) === String(currentUser.id)) { %><small class="text-brand" style="margin-left:6px">(Anda)</small><% } %>
+                  </div>
+                </div>
+              </td>
+              <td><small class="text-muted"><%= u.email %></small></td>
+              <td>
+                <% if (u.role === 'admin') { %><span class="badge badge-admin">Admin</span>
+                <% } else { %><span class="badge badge-muted">Editor</span><% } %>
+              </td>
+              <td><small class="text-muted"><%= h.formatDate(u.created_at) %></small></td>
+              <td>
+                <div class="cell-actions">
+                  <% if (String(u.id) !== String(currentUser.id)) { %>
+                  <form action="/admin/pengguna/<%= u.id %>/delete" method="POST" data-confirm="Hapus pengguna ini?">
+                    <button class="btn btn-danger btn-sm btn-icon" type="submit" title="Hapus">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/></svg>
+                    </button>
+                  </form>
+                  <% } else { %>
+                  <span class="badge badge-active">Akun aktif</span>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="hd-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span> Tambah Pengguna</h3>
+      </div>
+      <div class="panel-body">
+        <form action="/admin/pengguna" method="POST">
+          <div class="field">
+            <label for="name">Nama <span class="req">*</span></label>
+            <input class="input" type="text" id="name" name="name" required placeholder="Nama lengkap">
+          </div>
+          <div class="field">
+            <label for="email">Email <span class="req">*</span></label>
+            <input class="input" type="email" id="email" name="email" required placeholder="email@news.id">
+          </div>
+          <div class="field">
+            <label for="password">Password <span class="req">*</span></label>
+            <input class="input" type="password" id="password" name="password" required placeholder="Minimal 6 karakter">
+          </div>
+          <div class="field">
+            <label for="role">Peran</label>
+            <select class="select" id="role" name="role">
+              <option value="editor">Editor</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Tambah Pengguna</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="hd-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span> Ubah Password</h3>
+      </div>
+      <div class="panel-body">
+        <form action="/admin/pengguna/<%= currentUser.id %>/password" method="POST">
+          <div class="field">
+            <label for="np">Password Baru (akun Anda) <span class="req">*</span></label>
+            <input class="input" type="password" id="np" name="password" required placeholder="Password baru">
+          </div>
+          <button class="btn btn-dark" type="submit" style="width:100%;justify-content:center">Perbarui Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

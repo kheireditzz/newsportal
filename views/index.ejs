@@ -1,0 +1,172 @@
+<% if (slides && slides.length) { %>
+<section class="ticker">
+  <div class="ticker-label"><span class="ticker-pulse"></span>KILAS BERITA</div>
+  <div class="ticker-track">
+    <div class="ticker-move">
+      <% slides.concat(latest).slice(0,8).forEach(function(s, i){ %>
+        <a href="<%= s.link || ('/berita/' + (s.slug||'')) %>"><%= s.title %></a>
+        <% if (i < 7) { %> &nbsp;•&nbsp; <% } %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<div class="trending-bar">
+  <div class="container">
+    <div class="trending-inner">
+      <span class="trending-tag">
+        <%- h.icon('googlenews', 13) %>
+        TREN TOPIK:
+      </span>
+      <div class="trending-list">
+        <a href="/berita?q=digitalisasi">#DigitalisasiDesa</a>
+        <a href="/berita?q=ekonomi">#PertumbuhanEkonomi</a>
+        <a href="/berita?q=teknologi">#StartupLokal</a>
+        <a href="/berita?q=timnas">#Timnas</a>
+        <a href="/berita?q=energi">#TransisiEnergi</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="slider" data-slider>
+        <% slides.forEach(function(s, i){ %>
+          <div class="slide <%= i===0 ? 'active':'' %> <%= s.show_image ? '' : 'slide--text' %>" <% if (s.show_image) { %>style="background-image:url('/uploads/<%= s.image %>')"<% } %>>
+            <div class="slide-body">
+              <% if (s.badge) { %><span class="slide-badge"><%= s.badge %></span><% } %>
+              <h2 class="slide-title"><%= s.title %></h2>
+              <p class="slide-sub"><%= s.subtitle %></p>
+            </div>
+          </div>
+        <% }) %>
+        <button class="slider-nav prev" aria-label="Sebelumnya"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="slider-nav next" aria-label="Berikutnya"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+        <div class="slider-dots"></div>
+      </div>
+
+      <div class="hero-side">
+        <% (featured && featured.length ? featured.slice(1,4) : latest.slice(0,3)).forEach(function(a){ %>
+          <a href="/berita/<%= a.slug %>" class="side-card" style="background-image:url('/uploads/<%= a.image %>')">
+            <div class="side-card-body">
+              <div class="cat"><%= a.category_name || 'Berita' %></div>
+              <h3><%= a.title %></h3>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="section">
+  <div class="container">
+    <div class="layout-2col">
+      <div>
+        <div class="section-head">
+          <h2 class="section-title">Berita Utama</h2>
+          <a href="/berita" class="section-more">Lihat semua <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></a>
+        </div>
+
+        <%- include('partials/headline') %>
+
+        <div class="news-grid" style="grid-template-columns:repeat(2,1fr);margin-top:22px">
+          <% latest.slice(1,5).forEach(function(a){ %>
+            <%- include('partials/card', { article: a }) %>
+          <% }) %>
+        </div>
+      </div>
+
+      <aside>
+        <div class="widget">
+          <h3 class="widget-title">Terpopuler</h3>
+          <% popular.forEach(function(a, i){ %>
+            <article class="pop-item">
+              <span class="pop-rank"><%= String(i+1).padStart(2,'0') %></span>
+              <div>
+                <h4><a href="/berita/<%= a.slug %>"><%= a.title %></a></h4>
+                <div class="meta"><%= Number(a.views).toLocaleString('id-ID') %> dibaca · <%= a.category_name || 'Umum' %></div>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+
+        <div class="widget widget-newsletter">
+          <div class="newsletter-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>BULETIN HARIAN</div>
+          <h3 class="newsletter-title">Rangkuman Berita Pagi</h3>
+          <p class="newsletter-desc">Lima laporan terverifikasi pilihan redaksi, dikirim langsung ke surel Anda setiap pukul 06.00 WIB.</p>
+          <form class="newsletter-form" onsubmit="event.preventDefault();this.querySelector('.input').value='';this.querySelector('button').textContent='Terdaftar!';">
+            <input class="field input" type="email" required placeholder="Masukkan alamat email" aria-label="Alamat Email">
+            <button class="btn btn-primary btn-block" type="submit">Daftar Sekarang</button>
+          </form>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<% if (videos && videos.length) { %>
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">Video Pilihan</h2>
+      <a href="/video" class="section-more">Semua video <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></a>
+    </div>
+    <div class="video-grid">
+      <% videos.forEach(function(v){ %>
+        <article class="video-card">
+          <a href="#" class="video-thumb" data-video="<%= v.url %>">
+            <img src="/uploads/<%= v.thumbnail %>" alt="<%= v.title %>" loading="lazy">
+            <div class="play-btn"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
+            <% if (v.duration) { %><span class="video-duration"><%= v.duration %></span><% } %>
+          </a>
+          <div class="video-info">
+            <h4><%= v.title %></h4>
+            <% if (v.category_name) { %><div class="cat"><%= v.category_name %></div><% } %>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<% if (photos && photos.length) { %>
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">Galeri Foto</h2>
+      <a href="/galeri" class="section-more">Semua foto <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></a>
+    </div>
+    <div class="gallery-grid">
+      <% photos.forEach(function(p, i){ %>
+        <div class="g-item <%= i===0 ? 'wide':'' %>" data-full="/uploads/<%= p.image %>" data-caption="<%= p.caption || p.title %>">
+          <img src="/uploads/<%= p.image %>" alt="<%= p.title %>" loading="lazy">
+          <div class="cap"><%= p.title %></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<% byCategory.forEach(function(group){ %>
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title"><%= group.category.name %></h2>
+      <a href="/kategori/<%= group.category.slug %>" class="section-more">Lihat semua <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></a>
+    </div>
+    <div class="news-grid">
+      <% group.articles.forEach(function(a){ %>
+        <%- include('partials/card', { article: a }) %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% }) %>
+
+<div class="lightbox"><button class="lb-close">&times;</button><img src="" alt=""><div class="lb-cap"></div></div>

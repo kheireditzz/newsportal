@@ -1,0 +1,322 @@
+<%#
+  Media Editor Partial — crop, resize/dimension, adjust, rotate, flip + video frame capture
+  Usage: include this partial with { editorId: 'unique-id' }.
+  The editor lives inside the same form it saves into.
+%>
+<div data-media-editor id="<%= editorId %>">
+  <div class="media-editor-backdrop">
+    <div class="media-editor" role="dialog" aria-modal="true" aria-label="Editor Gambar">
+      <div class="media-editor-head">
+        <h3>
+          <span class="m-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/><path d="m15 5 4 4"/></svg></span>
+          Crop &amp; Ukuran Gambar
+        </h3>
+        <button type="button" class="topbar-icon-btn" data-media-close aria-label="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="media-editor-body">
+        <div class="media-canvas-wrap">
+          <div class="media-canvas-box">
+            <div class="media-canvas-stage">
+              <canvas width="0" height="0" data-preview-canvas></canvas>
+              <div class="media-crop-overlay" style="display:none">
+                <div class="crop-grid-lines">
+                  <div class="grid-line-h h1"></div>
+                  <div class="grid-line-h h2"></div>
+                  <div class="grid-line-v v1"></div>
+                  <div class="grid-line-v v2"></div>
+                </div>
+                <div class="crop-dimension-badge" data-crop-badge>0 × 0</div>
+                <span class="handle nw"></span>
+                <span class="handle n"></span>
+                <span class="handle ne"></span>
+                <span class="handle w"></span>
+                <span class="handle e"></span>
+                <span class="handle sw"></span>
+                <span class="handle s"></span>
+                <span class="handle se"></span>
+              </div>
+            </div>
+            <div class="media-canvas-empty">Pilih atau unggah gambar terlebih dahulu</div>
+          </div>
+        </div>
+
+        <div class="media-tools">
+          <!-- tool switcher -->
+          <div class="tool-section">
+            <div class="tool-label">Mode Alat</div>
+            <div class="tool-chips" style="grid-template-columns: repeat(4, 1fr);">
+              <button type="button" class="tool-chip active" data-tool="crop">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+                <span class="chip-label">Crop</span>
+              </button>
+              <button type="button" class="tool-chip" data-tool="size">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                <span class="chip-label">Ukuran</span>
+              </button>
+              <button type="button" class="tool-chip" data-tool="adjust">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M5.6 8.5 8.7 10M15.3 14l3.1 1.5M3 12h4M17 12h4M5.6 15.5l3.1-1.5M15.3 10l3.1-1.5"/></svg>
+                <span class="chip-label">Atur</span>
+              </button>
+              <button type="button" class="tool-chip" data-tool="video">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg>
+                <span class="chip-label">Video</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- CROP panel -->
+          <div class="tool-section" data-tool-panel="crop">
+            <div class="tool-label">Rasio Pemotongan (Aspect Ratio)</div>
+            <div class="tool-chips media-presets" style="margin-bottom:12px">
+              <button type="button" class="tool-chip" data-aspect="">
+                <span style="border:2px dashed currentColor;border-radius:3px;width:20px;height:12px;display:block"></span>
+                <span class="chip-label">Bebas</span>
+              </button>
+              <button type="button" class="tool-chip active" data-aspect="16/9">
+                <span style="border:2px solid currentColor;border-radius:3px;width:22px;height:12px;display:block"></span>
+                <span class="chip-label">16:9 (Berita)</span>
+              </button>
+              <button type="button" class="tool-chip" data-aspect="4/3">
+                <span style="border:2px solid currentColor;border-radius:3px;width:20px;height:15px;display:block"></span>
+                <span class="chip-label">4:3</span>
+              </button>
+              <button type="button" class="tool-chip" data-aspect="3/2">
+                <span style="border:2px solid currentColor;border-radius:3px;width:21px;height:14px;display:block"></span>
+                <span class="chip-label">3:2</span>
+              </button>
+              <button type="button" class="tool-chip" data-aspect="1/1">
+                <span style="border:2px solid currentColor;border-radius:3px;width:16px;height:16px;display:block"></span>
+                <span class="chip-label">1:1 (Kotak)</span>
+              </button>
+              <button type="button" class="tool-chip" data-aspect="9/16">
+                <span style="border:2px solid currentColor;border-radius:3px;width:12px;height:20px;display:block"></span>
+                <span class="chip-label">9:16 (Story)</span>
+              </button>
+              <button type="button" class="tool-chip" data-aspect="4/5">
+                <span style="border:2px solid currentColor;border-radius:3px;width:16px;height:20px;display:block"></span>
+                <span class="chip-label">4:5</span>
+              </button>
+              <button type="button" class="tool-chip" data-aspect="21/9">
+                <span style="border:2px solid currentColor;border-radius:3px;width:22px;height:10px;display:block"></span>
+                <span class="chip-label">21:9 (Banner)</span>
+              </button>
+            </div>
+
+            <div class="tool-label" style="margin-top:14px">Aksi Cepat Area Crop</div>
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <button type="button" class="btn btn-ghost btn-sm" data-crop-action="center" style="flex:1;justify-content:center;font-size:11.5px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                Pusatkan
+              </button>
+              <button type="button" class="btn btn-ghost btn-sm" data-crop-action="full" style="flex:1;justify-content:center;font-size:11.5px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                Penuh / Reset
+              </button>
+            </div>
+
+            <div class="media-size-info-card">
+              <div class="media-size-info-row">
+                <span>Ukuran Crop:</span>
+                <span class="val" data-crop-readout>-</span>
+              </div>
+              <div class="media-size-info-row">
+                <span>Rasio:</span>
+                <span class="val" data-crop-ratio-readout>16:9</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIZE / UKURAN panel -->
+          <div class="tool-section" data-tool-panel="size" style="display:none">
+            <div class="tool-label">Preset Ukuran / Resolusi Output</div>
+            <div class="tool-chips media-presets" style="margin-bottom:14px">
+              <button type="button" class="tool-chip active" data-size-preset="1200x675">
+                <span style="font-weight:800;font-size:11px">1200×675</span>
+                <span class="chip-label">16:9 HD Berita</span>
+              </button>
+              <button type="button" class="tool-chip" data-size-preset="800x450">
+                <span style="font-weight:800;font-size:11px">800×450</span>
+                <span class="chip-label">16:9 Standar</span>
+              </button>
+              <button type="button" class="tool-chip" data-size-preset="1080x1080">
+                <span style="font-weight:800;font-size:11px">1080×1080</span>
+                <span class="chip-label">1:1 Medsos</span>
+              </button>
+              <button type="button" class="tool-chip" data-size-preset="600x400">
+                <span style="font-weight:800;font-size:11px">600×400</span>
+                <span class="chip-label">3:2 Standar</span>
+              </button>
+              <button type="button" class="tool-chip" data-size-preset="1080x1920">
+                <span style="font-weight:800;font-size:11px">1080×1920</span>
+                <span class="chip-label">9:16 Story</span>
+              </button>
+              <button type="button" class="tool-chip" data-size-preset="1600x600">
+                <span style="font-weight:800;font-size:11px">1600×600</span>
+                <span class="chip-label">Banner Slider</span>
+              </button>
+              <button type="button" class="tool-chip" data-size-preset="original">
+                <span style="font-weight:800;font-size:11px">Asli</span>
+                <span class="chip-label">Sesuai Seleksi</span>
+              </button>
+            </div>
+
+            <div class="tool-label">Kustom Lebar &amp; Tinggi (px)</div>
+            <div class="media-size-inputs-row">
+              <div class="field" style="margin-bottom:0;flex:1">
+                <label style="font-size:10.5px;margin-bottom:3px;color:var(--a-muted)">Lebar (W)</label>
+                <input type="number" class="input input-sm" data-dim-w min="32" max="4096" placeholder="1200">
+              </div>
+              <div style="padding-top:18px">
+                <button type="button" class="btn btn-ghost btn-sm btn-icon active" data-lock-ratio title="Kunci Proporsi Aspek" style="width:32px;height:32px">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </button>
+              </div>
+              <div class="field" style="margin-bottom:0;flex:1">
+                <label style="font-size:10.5px;margin-bottom:3px;color:var(--a-muted)">Tinggi (H)</label>
+                <input type="number" class="input input-sm" data-dim-h min="32" max="4096" placeholder="675">
+              </div>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm btn-block" data-apply-custom-size style="margin-top:8px;justify-content:center;font-size:11.5px">
+              Terapkan Dimensi ke Crop
+            </button>
+
+            <div class="tool-label" style="margin-top:14px">Format &amp; Kualitas Output</div>
+            <div class="form-row" style="gap:8px;margin-bottom:10px">
+              <div class="field" style="margin-bottom:0;flex:1">
+                <label style="font-size:10.5px;margin-bottom:3px;color:var(--a-muted)">Format</label>
+                <select class="select select-sm" data-format-select style="font-size:12px;padding:6px 8px">
+                  <option value="image/webp" selected>WebP (Hemat &amp; Cepat)</option>
+                  <option value="image/jpeg">JPEG (Standar Foto)</option>
+                  <option value="image/png">PNG (Kualitas Penuh)</option>
+                </select>
+              </div>
+              <div class="field" style="margin-bottom:0;flex:1">
+                <label style="font-size:10.5px;margin-bottom:3px;color:var(--a-muted)">Kualitas <output data-quality-out>85%</output></label>
+                <input type="range" data-quality-range min="40" max="100" value="85" style="margin-top:7px">
+              </div>
+            </div>
+
+            <div class="media-size-info-card">
+              <div class="media-size-info-row">
+                <span>Gambar Asli:</span>
+                <span class="val" data-info-original>-</span>
+              </div>
+              <div class="media-size-info-row">
+                <span>Ukuran Crop:</span>
+                <span class="val" data-info-crop>-</span>
+              </div>
+              <div class="media-size-info-row">
+                <span>Target Output:</span>
+                <span class="val" data-info-target>-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADJUST panel -->
+          <div class="tool-section" data-tool-panel="adjust" style="display:none">
+            <div class="tool-label">Penyesuaian Warna</div>
+            <div class="slider-control" style="margin-bottom:14px">
+              <label>Cerah <output data-adjust-out="bright">100</output></label>
+              <input type="range" data-adjust="bright" min="20" max="200" value="100">
+            </div>
+            <div class="slider-control" style="margin-bottom:14px">
+              <label>Kontras <output data-adjust-out="contrast">100</output></label>
+              <input type="range" data-adjust="contrast" min="20" max="200" value="100">
+            </div>
+            <div class="slider-control" style="margin-bottom:14px">
+              <label>Kejenuhan <output data-adjust-out="sat">100</output></label>
+              <input type="range" data-adjust="sat" min="0" max="200" value="100">
+            </div>
+            <div class="tool-label" style="margin-top:8px">Orientasi &amp; Putar</div>
+            <div class="tool-chips" style="grid-template-columns: repeat(4, 1fr);">
+              <button type="button" class="tool-chip" data-rotate="-90" title="Putar kiri 90°">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                <span class="chip-label">Kiri</span>
+              </button>
+              <button type="button" class="tool-chip" data-rotate="90" title="Putar kanan 90°">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                <span class="chip-label">Kanan</span>
+              </button>
+              <button type="button" class="tool-chip" data-flip="h" title="Balik horizontal">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h12a5 5 0 0 1 0 10h-2"/></svg>
+                <span class="chip-label">Balik H</span>
+              </button>
+              <button type="button" class="tool-chip" data-flip="v" title="Balik vertikal">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-4-4-4 4"/><path d="M17 4v12a5 5 0 0 1-10 0v-2"/></svg>
+                <span class="chip-label">Balik V</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- VIDEO panel -->
+          <div class="tool-section" data-tool-panel="video" style="display:none">
+            <div class="tool-label">Thumbnail dari Video</div>
+            <div class="thumb-step">
+              <span class="step-num" data-vp-step="1">1</span>
+              <span class="step-label">Unggah video untuk mengambil frame</span>
+            </div>
+            <label class="media-upload-zone">
+              <input type="file" accept="video/*" data-video-input>
+              <span class="txt"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3M17 8l-5-5-5 5M12 3v12"/></svg>Pilih video dari perangkat</span>
+            </label>
+
+            <div class="vt-frame-capture">
+              <video data-video-el controls preload="metadata" style="display:none"></video>
+              <div class="vt-timebar">
+                <span class="mono text-muted" style="font-size:10.5px">POSISI</span>
+                <input type="range" data-video-time min="0" max="100" value="0">
+                <button type="button" class="btn btn-ghost btn-sm btn-icon" data-video-capture title="Tangkap frame ini">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="thumb-step" style="margin-top:8px">
+              <span class="step-num" data-vp-step="2">2</span>
+              <span class="step-label">Pilih salah satu frame otomatis</span>
+            </div>
+            <div class="vt-frame-grid" data-frame-grid></div>
+
+            <div class="thumb-step" style="margin-top:8px">
+              <span class="step-num" data-vp-step="3">3</span>
+              <span class="step-label">Pratinjau &amp; gunakan</span>
+            </div>
+            <div data-video-selected-preview style="margin:4px 0 10px"></div>
+            <canvas data-frame-preview-canvas style="display:none"></canvas>
+            <button type="button" class="btn btn-primary btn-block" data-use-video-frame style="justify-content:center">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 10-9"/></svg>
+              Gunakan sebagai Thumbnail
+            </button>
+            <p class="hint" style="margin-top:10px">Frame terbaik otomatis diambil dari tengah video. Geser untuk memilih momen lain lalu tangkap.</p>
+          </div>
+
+          <!-- replace image -->
+          <div class="tool-section" style="border-top:1px solid var(--a-line);padding-top:14px">
+            <div class="tool-label">Ganti Gambar Sumber</div>
+            <label class="media-upload-zone">
+              <input type="file" accept="image/*" data-upload-image>
+              <span class="txt"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3M17 8l-5-5-5 5M12 3v12"/></svg>Pilih gambar lain</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="media-foot">
+        <div class="text-muted" style="font-size:12px;display:flex;align-items:center;gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 21"/></svg>
+          <span data-export-summary>Output: 1200 × 675 px (WebP)</span>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn btn-ghost" data-media-close>Batal</button>
+          <button type="button" class="btn btn-primary" data-media-apply>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Terapkan &amp; Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

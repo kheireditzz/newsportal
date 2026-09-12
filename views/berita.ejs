@@ -1,0 +1,62 @@
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Beranda</a> / Berita</div>
+    <h1><%= q ? 'Hasil Pencarian: "' + q + '"' : (catSlug ? (categories.find(function(c){return c.slug===catSlug}) || {}).name : 'Semua Berita') %></h1>
+    <p><%= total %> artikel ditemukan<%= q ? ' untuk kata kunci ' + q : '' %>.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="layout-2col">
+      <div>
+        <% if (!articles.length) { %>
+          <div class="empty">
+            <div class="empty-huge">0</div>
+            <p>Tidak ada berita yang cocok. Coba kata kunci lain.</p>
+          </div>
+        <% } else { %>
+          <div class="news-grid" style="grid-template-columns:repeat(2,1fr)">
+            <% articles.forEach(function(a){ %>
+              <%- include('partials/card', { article: a }) %>
+            <% }) %>
+          </div>
+        <% } %>
+
+        <% if (totalPages > 1) { %>
+          <nav class="pagination">
+            <% if (page > 1) { %>
+              <a href="?<%= q ? 'q=' + encodeURIComponent(q) + '&' : '' %><%= catSlug ? 'kategori=' + catSlug + '&' : '' %>page=<%= page-1 %>"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></a>
+            <% } else { %><span class="disabled"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></span><% } %>
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <% if (i === page) { %><span class="current"><%= i %></span>
+              <% } else { %><a href="?<%= q ? 'q=' + encodeURIComponent(q) + '&' : '' %><%= catSlug ? 'kategori=' + catSlug + '&' : '' %>page=<%= i %>"><%= i %></a><% } %>
+            <% } %>
+            <% if (page < totalPages) { %>
+              <a href="?<%= q ? 'q=' + encodeURIComponent(q) + '&' : '' %><%= catSlug ? 'kategori=' + catSlug + '&' : '' %>page=<%= page+1 %>"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+            <% } else { %><span class="disabled"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><% } %>
+          </nav>
+        <% } %>
+      </div>
+
+      <aside>
+        <div class="widget">
+          <h3 class="widget-title">Pencarian</h3>
+          <form action="/berita" method="get">
+            <input class="input field" type="text" name="q" value="<%= q || '' %>" placeholder="Kata kunci…" style="margin-bottom:10px">
+            <button class="btn btn-dark btn-block" type="submit">Cari Sekarang</button>
+          </form>
+        </div>
+        <div class="widget">
+          <h3 class="widget-title">Kategori</h3>
+          <% categories.forEach(function(c){ %>
+            <a href="/kategori/<%= c.slug %>" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px;font-weight:600">
+              <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:<%= c.color %>;margin-right:8px"></span><%= c.name %></span>
+              <span style="color:var(--muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></span>
+            </a>
+          <% }) %>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

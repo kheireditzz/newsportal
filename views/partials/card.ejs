@@ -1,0 +1,18 @@
+<article class="card">
+  <a href="/berita/<%= article.slug %>" class="card-media">
+    <img src="/uploads/<%= article.image || 'images/art-1.svg' %>" alt="<%= article.title %>" loading="lazy">
+    <% if (article.category_name) { %><span class="card-cat"><%= article.category_name %></span><% } %>
+    <% if (article.featured) { %><span class="badge-featured">UTAMA</span><% } %>
+  </a>
+  <div class="card-body">
+    <h3 class="card-title"><a href="/berita/<%= article.slug %>"><%= article.title %></a></h3>
+    <p class="card-excerpt"><%= h.truncate(article.excerpt || article.content, 135) %></p>
+    <div class="card-meta">
+      <span><%= h.timeAgo(article.published_at || article.created_at) %></span>
+      <span class="dot"></span>
+      <span><%= h.formatDate(article.published_at || article.created_at) %></span>
+      <span class="dot"></span>
+      <span><%= Number(article.views || 0).toLocaleString('id-ID') %> dibaca</span>
+    </div>
+  </div>
+</article>

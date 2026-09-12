@@ -1,0 +1,107 @@
+﻿<div class="page-head">
+  <div>
+    <h2>Pengaturan</h2>
+    <div class="desc">Konfigurasi identitas, kontak, dan media sosial situs.</div>
+  </div>
+</div>
+
+<form action="/admin/pengaturan" method="POST">
+  <div class="form-grid">
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="hd-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M12 8v8"/></svg></span> Identitas Situs</h3>
+      </div>
+      <div class="panel-body">
+        <div class="form-row">
+          <div class="field">
+            <label for="site_name">Nama Situs</label>
+            <input class="input" type="text" id="site_name" name="site_name" value="<%= values.site_name || '' %>">
+          </div>
+          <div class="field">
+            <label for="tagline">Tagline</label>
+            <input class="input" type="text" id="tagline" name="tagline" value="<%= values.tagline || '' %>">
+          </div>
+        </div>
+        <div class="field">
+          <label for="description">Deskripsi / Meta</label>
+          <textarea class="textarea" id="description" name="description" style="min-height:100px"><%= values.description || '' %></textarea>
+          <div class="hint">Digunakan untuk deskripsi SEO di hasil pencarian.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <h3><span class="hd-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="m22 2-11 11M22 2l-7 20-4-9-9-4z"/></svg></span> Kontak Redaksi</h3>
+        </div>
+        <div class="panel-body">
+          <div class="form-row">
+            <div class="field">
+              <label for="email">Email</label>
+              <input class="input" type="email" id="email" name="email" value="<%= values.email || '' %>">
+            </div>
+            <div class="field">
+              <label for="phone">Telepon / WhatsApp</label>
+              <input class="input" type="text" id="phone" name="phone" value="<%= values.phone || '' %>">
+            </div>
+          </div>
+          <div class="field">
+            <label for="address">Alamat</label>
+            <input class="input" type="text" id="address" name="address" value="<%= values.address || '' %>">
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3><span class="hd-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span> Media Sosial</h3>
+        </div>
+        <div class="panel-body">
+          <div class="social-toolbar">
+            <span class="hint" style="margin:0">Aktifkan / nonaktifkan tiap jaringan, lalu isi tautannya. Ikon hanya tampil bila aktif dan berisi tautan.</span>
+          </div>
+          <%
+            var socials = [
+              ['facebook', 'Facebook', '#1877F2'],
+              ['instagram', 'Instagram', '#E4405F'],
+              ['twitter', 'Twitter / X', '#111111'],
+              ['youtube', 'YouTube', '#FF0000'],
+              ['whatsapp', 'WhatsApp', '#25D366'],
+              ['telegram', 'Telegram', '#26A5E4'],
+              ['tiktok', 'TikTok', '#000000']
+            ];
+          %>
+          <% socials.forEach(function(s){ %>
+          <div class="social-row">
+            <% if (s[0] === 'facebook') { %><span class="s-icon" style="--sc:<%= s[2] %>"><%- h.icon('facebook', 16) %></span><% } %>
+            <% if (s[0] === 'instagram') { %><span class="s-icon" style="--sc:<%= s[2] %>"><%- h.icon('instagram', 16) %></span><% } %>
+            <% if (s[0] === 'twitter') { %><span class="s-icon" style="--sc:<%= s[2] %>"><%- h.icon('x', 14) %></span><% } %>
+            <% if (s[0] === 'youtube') { %><span class="s-icon" style="--sc:<%= s[2] %>"><%- h.icon('youtube', 17) %></span><% } %>
+            <% if (s[0] === 'whatsapp') { %><span class="s-icon" style="--sc:<%= s[2] %>"><%- h.icon('whatsapp', 16) %></span><% } %>
+            <% if (s[0] === 'telegram') { %><span class="s-icon" style="--sc:<%= s[2] %>"><%- h.icon('telegram', 16) %></span><% } %>
+            <% if (s[0] === 'tiktok') { %><span class="s-icon" style="--sc:<%= s[2] %>"><%- h.icon('tiktok', 15) %></span><% } %>
+            <div class="s-main">
+              <label for="<%= s[0] %>"><%= s[1] %></label>
+              <input class="input" type="text" id="<%= s[0] %>" name="<%= s[0] %>" value="<%= values[s[0]] || '' %>" placeholder="https://...">
+            </div>
+            <label class="switch s-switch" title="Tampilkan di situs">
+              <input type="checkbox" name="<%= s[0] %>_visible" value="1" <%= values[s[0] + '_visible'] === '1' ? 'checked' : '' %>>
+              <span class="track"></span>
+              <span class="switch-label">Tampil</span>
+            </label>
+          </div>
+          <% }) %>
+          <div class="social-toolbar" style="border-top:1px solid var(--a-line);padding-top:12px;margin-top:4px">
+            <div class="hint" style="margin:0"><%- h.icon('rss', 13) %> Umpan RSS (<code>/rss</code>) selalu tersedia dan tidak terpengaruh pengaturan ini.</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;padding:13px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Simpan Pengaturan
+      </button>
+    </div>
+  </div>
+</form>

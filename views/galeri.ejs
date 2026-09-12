@@ -1,0 +1,33 @@
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Beranda</a> / Galeri</div>
+    <h1>Galeri Foto</h1>
+    <p>Dokumentasi visual peristiwa dan momen penting yang dirangkum tim fotografer kami.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <% if (!photos.length) { %>
+      <div class="empty"><div class="empty-huge">0</div><p>Belum ada foto di galeri.</p></div>
+    <% } else { %>
+      <div class="gallery-filters">
+        <button class="active" data-album="all">Semua</button>
+        <% albums.forEach(function(al){ %>
+          <button data-album="<%= al %>"><%= al %></button>
+        <% }) %>
+      </div>
+
+      <div class="gallery-grid filtered">
+        <% photos.forEach(function(p, i){ %>
+          <div class="g-item <%= i===0 ? 'wide':'' %>" data-album="<%= p.album %>" data-full="/uploads/<%= p.image %>" data-caption="<%= p.caption || p.title %>">
+            <img src="/uploads/<%= p.image %>" alt="<%= p.title %>" loading="lazy">
+            <div class="cap"><%= p.title %></div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<div class="lightbox"><button class="lb-close">&times;</button><img src="" alt=""><div class="lb-cap"></div></div>

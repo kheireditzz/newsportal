@@ -1,0 +1,31 @@
+<section class="page-hero" style="background:linear-gradient(135deg, #0b1120, <%= category.color %>)">
+  <div class="container">
+    <div class="crumbs"><a href="/">Beranda</a> / <a href="/berita">Berita</a> / <%= category.name %></div>
+    <h1><%= category.name %></h1>
+    <p><%= category.description || ('Kumpulan berita seputar ' + category.name) %> — <%= total %> artikel.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <% if (!articles.length) { %>
+      <div class="empty"><div class="empty-huge">0</div><p>Belum ada berita pada kategori ini.</p></div>
+    <% } else { %>
+      <div class="news-grid">
+        <% articles.forEach(function(a){ %>
+          <%- include('partials/card', { article: a }) %>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (totalPages > 1) { %>
+      <nav class="pagination">
+        <% if (page > 1) { %><a href="?page=<%= page-1 %>"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></a><% } else { %><span class="disabled"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></span><% } %>
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <% if (i === page) { %><span class="current"><%= i %></span><% } else { %><a href="?page=<%= i %>"><%= i %></a><% } %>
+        <% } %>
+        <% if (page < totalPages) { %><a href="?page=<%= page+1 %>"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a><% } else { %><span class="disabled"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span><% } %>
+      </nav>
+    <% } %>
+  </div>
+</section>

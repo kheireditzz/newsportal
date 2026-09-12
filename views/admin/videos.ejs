@@ -1,0 +1,151 @@
+<%
+  var editId = editing ? editing.id : null;
+%>
+<div class="page-head">
+  <div>
+    <h2>Kelola Video</h2>
+    <div class="desc">Seret gagang ⠿ untuk mengatur urutan video pilihan.</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head">
+      <h3><span class="hd-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg></span> Daftar Video</h3>
+      <span class="badge badge-muted"><%= videos.length %> video</span>
+    </div>
+    <div class="panel-body">
+      <% if (!videos.length) { %>
+        <div class="empty-state"><div class="big"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg></div>Belum ada video.</div>
+      <% } else { %>
+      <div class="sortable-list" data-sortable data-sortable-url="/api/admin/reorder/videos">
+        <% videos.forEach(function(v, i){ %>
+        <div class="sortable-item" data-sort-id="<%= v.id %>" <%= String(v.id) === String(editId) ? 'style="border-color:var(--a-brand);box-shadow:0 0 0 3px rgba(227,0,43,.12)"' : '' %>>
+          <span class="drag-handle" title="Seret untuk mengurutkan" aria-label="Seret untuk mengurutkan">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="5" r="1.4"/><circle cx="15" cy="5" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="19" r="1.4"/><circle cx="15" cy="19" r="1.4"/></svg>
+          </span>
+          <span class="tab-num"><%= String(i + 1).padStart(2, '0') %></span>
+          <div class="cell-title">
+            <img class="thumb" src="/uploads/<%= v.thumbnail || 'images/vid-1.svg' %>" alt="">
+            <div>
+              <b><a href="/admin/video/<%= v.id %>/edit"><%= v.title %></a></b>
+              <small><%= h.truncate(v.description, 58) %></small>
+            </div>
+          </div>
+          <div class="col-meta">
+            <% if (v.category_name) { %><span class="badge badge-cat"><%= v.category_name %></span><% } else { %><span class="badge badge-muted">—</span><% } %>
+          </div>
+          <span class="mono text-muted nowrap"><%= v.duration || '—' %></span>
+          <div class="col-status">
+            <% if (v.status === 'published') { %><span class="badge badge-published">Terbit</span>
+            <% } else { %><span class="badge badge-draft">Draf</span><% } %>
+          </div>
+          <div class="cell-actions">
+            <a href="/admin/video/<%= v.id %>/edit" class="btn btn-ghost btn-sm">Edit</a>
+            <form action="/admin/video/<%= v.id %>/delete" method="POST" data-confirm="Hapus video ini?">
+              <button class="btn btn-danger btn-sm btn-icon" type="submit" title="Hapus">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/></svg>
+              </button>
+            </form>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+      <div class="sortable-footer">
+        <span class="clean">Urutan tersimpan otomatis.</span>
+        <span class="dirty"><span class="dot dot-warn"></span> Menyimpan...</span>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="hd-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span> <%= editId ? 'Edit Video' : 'Tambah Video' %></h3>
+      </div>
+      <div class="panel-body">
+        <form action="<%= editId ? '/admin/video/' + editing.id : '/admin/video' %>" method="POST" enctype="multipart/form-data">
+          <div class="field">
+            <label for="title">Judul Video <span class="req">*</span></label>
+            <input class="input" type="text" id="title" name="title" required placeholder="Judul video" value="<%= editId ? editing.title : '' %>">
+          </div>
+          <div class="field">
+            <label for="description">Deskripsi</label>
+            <textarea class="textarea" id="description" name="description" style="min-height:84px" placeholder="Deskripsi video..."><%= editId ? (editing.description || '') : '' %></textarea>
+          </div>
+          <div class="field">
+            <label for="url">URL Video (embed)</label>
+            <input class="input" type="text" id="url" name="url" placeholder="https://www.youtube.com/embed/..." value="<%= editId ? (editing.url || '') : '' %>">
+            <div class="hint">Gunakan tautan embed YouTube/Vimeo. Contoh: youtube.com/embed/dQw4w9WgXcQ</div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="duration">Durasi</label>
+              <input class="input" type="text" id="duration" name="duration" placeholder="mis. 12:45" value="<%= editId ? (editing.duration || '') : '' %>">
+            </div>
+            <div class="field">
+              <label for="category_id">Kategori</label>
+              <select class="select" id="category_id" name="category_id">
+                <option value="">— Tanpa Kategori —</option>
+                <% categories.forEach(function(c){ %>
+                  <option value="<%= c.id %>" <%= editId && String(editing.category_id) === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="status">Status</label>
+            <select class="select" id="status" name="status">
+              <option value="published" <%= !editId || editing.status === 'published' ? 'selected' : '' %>>Terbit</option>
+              <option value="draft" <%= editId && editing.status === 'draft' ? 'selected' : '' %>>Draf</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Thumbnail</label>
+            <label class="img-drop">
+              <div class="prev" <% if (editId && editing.thumbnail) { %>style="background:url('/uploads/<%= editing.thumbnail %>') center/cover no-repeat;border:0"<% } %>><%= editId && editing.thumbnail ? '' : 'Klik untuk memilih gambar' %></div>
+              <input type="file" name="thumbnail" accept="image/*">
+              <div class="txt"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3M17 8l-5-5-5 5M12 3v12"/></svg>Pilih dari perangkat</div>
+            </label>
+            <div class="v-stack" style="margin-top:10px">
+              <button type="button" class="btn btn-ghost btn-sm" data-edit-image data-preview="<%= editId && editing.thumbnail ? '/uploads/' + editing.thumbnail : '' %>">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/><path d="m15 5 4 4"/></svg>
+                Crop / Edit Thumbnail
+              </button>
+            </div>
+            <input class="input" type="text" name="thumbnail_url" placeholder="atau URL gambar" style="margin-top:12px" value="<%= editId ? (editing.thumbnail || '') : '' %>">
+          </div>
+
+          <div class="field">
+            <label>Ambil dari Link Video</label>
+            <div class="video-thumb-picker" data-video-picker>
+              <div class="vt-input">
+                <input class="input" type="text" data-vp-url placeholder="https://youtube.com/watch?v=... atau TikTok" value="<%= editId ? (editing.url || '') : '' %>">
+                <button type="button" class="btn btn-dark btn-sm" data-vp-fetch>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 6 4 6-4 6M8 12h12"/></svg>
+                  Ambil
+                </button>
+              </div>
+              <input type="hidden" name="thumb_path" data-vp-thumb>
+              <div data-vp-preview></div>
+              <div data-vp-requires-url style="display:none">
+                <p class="hint">Thumbnail YouTube/TikTok otomatis bisa diambil dari link video di atas.</p>
+              </div>
+            </div>
+          </div>
+
+          <%- include('../partials/media-editor', { editorId: 'media-editor-video-' + (editId ? editing.id : 'new') }) %>
+
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-primary" type="submit">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              <%= editId ? 'Simpan Perubahan' : 'Tambah Video' %>
+            </button>
+            <% if (editId) { %><a href="/admin/video" class="btn btn-ghost">Batal</a><% } %>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

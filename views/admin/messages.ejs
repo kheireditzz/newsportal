@@ -1,0 +1,36 @@
+﻿<div class="page-head">
+  <div>
+    <h2>Pesan Masuk</h2>
+    <div class="desc">Pertanyaan dan masukan dari pengunjung situs.</div>
+  </div>
+  <span class="badge badge-muted"><%= messages.length %> pesan</span>
+</div>
+
+<div class="panel">
+  <div class="panel-body flush">
+    <% if (!messages.length) { %>
+      <div class="empty-state"><div class="big"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><p>Belum ada pesan masuk.</p></div>
+    <% } else { %>
+      <% messages.forEach(function(m){ %>
+      <div class="msg-item bordered <%= m.is_read ? '' : 'unread' %>">
+        <div class="av"><%= m.name.charAt(0).toUpperCase() %></div>
+        <div class="body">
+          <b><%= m.name %> <span class="text-muted" style="font-weight:500">&lt;<%= m.email %>&gt;</span></b>
+          <p><strong><%= m.subject || '(tanpa subjek)' %></strong> — <%= h.truncate(m.body, 120) %></p>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+          <span class="time"><%= h.timeAgo(m.created_at) %></span>
+          <div class="cell-actions">
+            <a href="/admin/pesan/<%= m.id %>" class="btn btn-ghost btn-sm">Baca</a>
+            <form action="/admin/pesan/<%= m.id %>/delete" method="POST" data-confirm="Hapus pesan ini?">
+              <button class="btn btn-danger btn-sm btn-icon" type="submit" title="Hapus">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/></svg>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    <% } %>
+  </div>
+</div>

@@ -1,0 +1,236 @@
+<section class="page-hero" style="padding:28px 0 32px">
+  <div class="container">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">Beranda</a>
+      <span class="crumb-sep">/</span>
+      <a href="/berita">Berita</a>
+      <% if (article.category_slug) { %>
+        <span class="crumb-sep">/</span>
+        <a href="/kategori/<%= article.category_slug %>"><%= article.category_name %></a>
+      <% } %>
+    </nav>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="layout-2col article-layout">
+      <article class="article-wrap" id="mainArticle">
+        <header class="article-header">
+          <% if (article.category_name) { %>
+            <div class="article-cat-wrap">
+              <a href="/kategori/<%= article.category_slug %>" class="cat" style="background:<%= article.category_color %>18;color:<%= article.category_color %>;border:1px solid <%= article.category_color %>30">
+                <span class="cat-dot" style="background:<%= article.category_color %>"></span>
+                <%= article.category_name %>
+              </a>
+            </div>
+          <% } %>
+
+          <h1 class="article-title serif"><%= article.title %></h1>
+
+          <% if (article.excerpt) { %>
+            <p class="article-lead"><%= article.excerpt %></p>
+          <% } %>
+
+          <div class="article-meta-bar">
+            <div class="meta-left">
+              <span class="meta-avatar"><%= (article.author_name || 'R').charAt(0).toUpperCase() %></span>
+              <div class="meta-names">
+                <span class="author-name"><%= article.author_name || 'Redaksi Nusantara' %></span>
+                <span class="pub-date"><%= h.formatDate(article.published_at || article.created_at, {time:true}) %></span>
+              </div>
+            </div>
+            <div class="meta-right">
+              <span class="meta-pill" title="Estimasi Waktu Baca">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span><%= h.readingTime(article.content) %></span>
+              </span>
+              <span class="meta-pill" title="Total Pembaca">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span><%= Number(article.views || 0).toLocaleString('id-ID') %> dibaca</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Interactive Reading Timer & Controls Toolbar -->
+          <div class="reader-companion-toolbar">
+            <div class="reader-timer-widget" id="readingTimerBox" title="Timer Waktu Membaca">
+              <span class="timer-live-dot"></span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span class="timer-title">Waktu Baca:</span>
+              <span class="timer-digits mono" id="liveReadingTimer">00:00</span>
+              <span class="timer-rem" id="readingTimeRemaining">· Sisa: ~<%= h.readingTime(article.content) %></span>
+              <button type="button" class="btn-timer-toggle" id="btnToggleTimer" aria-label="Jeda / Lanjutkan Timer" title="Jeda / Lanjutkan Timer">
+                <svg id="timerIconPause" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                <svg id="timerIconPlay" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="display:none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </button>
+            </div>
+
+            <div class="reader-tools-right">
+              <!-- Audio Reader (Text-to-Speech) -->
+              <button type="button" class="tool-btn btn-audio-reader" id="btnAudioReader" title="Dengarkan pembacaan berita">
+                <svg class="audio-play-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                <span id="audioReaderLabel">Dengarkan</span>
+                <span class="audio-equalizer" id="audioEqualizer" style="display:none">
+                  <i></i><i></i><i></i>
+                </span>
+              </button>
+
+              <!-- Focus Mode Toggle -->
+              <button type="button" class="tool-btn" id="btnFocusMode" title="Mode Fokus Membaca">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                <span class="hide-mobile">Fokus</span>
+              </button>
+
+              <!-- Font Size Resizer -->
+              <div class="font-resizer-group" title="Ubah Ukuran Huruf">
+                <button type="button" class="btn-resize" id="fontDec" aria-label="Perkecil Ukuran Huruf">A-</button>
+                <button type="button" class="btn-resize active" id="fontReset" aria-label="Ukuran Huruf Standar">A</button>
+                <button type="button" class="btn-resize" id="fontInc" aria-label="Perbesar Ukuran Huruf">A+</button>
+              </div>
+
+              <!-- Print Action -->
+              <button type="button" class="tool-btn" onclick="window.print()" title="Cetak Artikel" aria-label="Cetak">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Featured / Cover Image -->
+        <div class="article-hero-img">
+          <img src="/uploads/<%= article.image || 'images/art-1.svg' %>" alt="<%= article.title %>" loading="lazy">
+          <% if (article.caption) { %>
+            <figcaption class="hero-img-caption"><%= article.caption %></figcaption>
+          <% } %>
+        </div>
+
+        <!-- Article Main Content with High-Legibility Typography -->
+        <div class="article-content serif-body" id="articleBody">
+          <%- article.content %>
+        </div>
+
+        <!-- Author Bio Card -->
+        <div class="author-bio-card">
+          <div class="author-avatar-big"><%= (article.author_name || 'R').charAt(0).toUpperCase() %></div>
+          <div class="author-info">
+            <div class="author-label">REDAKSI NUSANTARA NEWS</div>
+            <h4 class="author-fullname"><%= article.author_name || 'Tim Redaksi Nusantara News' %></h4>
+            <p class="author-bio-txt">Menyajikan liputan berita terverifikasi, independen, dan berimbang dari pelosok tanah air dan mancanegara.</p>
+          </div>
+        </div>
+
+        <!-- Social Share Bar -->
+        <div class="share-bar">
+          <span class="share-title">Bagikan Berita:</span>
+          <div class="share-btn-group">
+            <a class="share-btn share-wa" href="https://wa.me/?text=<%= encodeURIComponent(article.title + ' ' + (typeof fullUrl !== 'undefined' ? fullUrl : '')) %>" target="_blank" rel="noopener" aria-label="Bagikan ke WhatsApp" title="WhatsApp">
+              <%- h.icon('whatsapp', 17) %>
+              <span>WhatsApp</span>
+            </a>
+            <a class="share-btn share-x" href="https://twitter.com/intent/tweet?text=<%= encodeURIComponent(article.title) %>" target="_blank" rel="noopener" aria-label="Bagikan ke X" title="X (Twitter)">
+              <%- h.icon('x', 15) %>
+              <span>X</span>
+            </a>
+            <a class="share-btn share-fb" href="https://www.facebook.com/sharer/sharer.php" target="_blank" rel="noopener" aria-label="Bagikan ke Facebook" title="Facebook">
+              <%- h.icon('facebook', 17) %>
+              <span>Facebook</span>
+            </a>
+            <a class="share-btn share-tg" href="https://t.me/share/url?text=<%= encodeURIComponent(article.title) %>" target="_blank" rel="noopener" aria-label="Bagikan ke Telegram" title="Telegram">
+              <%- h.icon('telegram', 17) %>
+              <span>Telegram</span>
+            </a>
+            <button type="button" class="share-btn share-copy" id="btnCopyLink" aria-label="Salin Tautan" title="Salin Tautan Artikel">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              <span>Salin Link</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Related News Grid -->
+        <% if (related && related.length) { %>
+          <div class="related-section">
+            <div class="section-head">
+              <h2 class="section-title">
+                <span class="title-accent"></span>
+                Berita Terkait
+              </h2>
+            </div>
+            <div class="news-grid news-grid-3">
+              <% related.forEach(function(a){ %>
+                <%- include('partials/card', { article: a }) %>
+              <% }) %>
+            </div>
+          </div>
+        <% } %>
+      </article>
+
+      <!-- Sidebar -->
+      <aside class="article-sidebar" id="articleSidebar">
+        <!-- Widget Terpopuler -->
+        <div class="widget">
+          <h3 class="widget-title">
+            <span class="widget-title-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+            Terpopuler
+          </h3>
+          <div class="pop-list">
+            <% popular.forEach(function(a, i){ %>
+              <article class="pop-item">
+                <span class="pop-rank"><%= String(i+1).padStart(2,'0') %></span>
+                <div class="pop-content">
+                  <h4 class="pop-title"><a href="/berita/<%= a.slug %>"><%= a.title %></a></h4>
+                  <div class="pop-meta">
+                    <span><%= Number(a.views || 0).toLocaleString('id-ID') %> dibaca</span>
+                    <span>·</span>
+                    <span><%= h.readingTime(a.content) %></span>
+                  </div>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Widget Kategori -->
+        <div class="widget">
+          <h3 class="widget-title">
+            <span class="widget-title-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+            Kategori Berita
+          </h3>
+          <div class="category-widget-list">
+            <% categories.forEach(function(c){ %>
+              <a href="/kategori/<%= c.slug %>" class="cat-widget-item">
+                <span class="cat-widget-name">
+                  <span class="cat-color-dot" style="background:<%= c.color || '#2563eb' %>"></span>
+                  <%= c.name %>
+                </span>
+                <span class="cat-widget-arrow">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+                </span>
+              </a>
+            <% }) %>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- Floating Reader Companion Bar (Appears on Scroll) -->
+<div class="floating-reader-bar" id="floatingReaderBar">
+  <div class="fr-container">
+    <div class="fr-title" id="frTitle"><%= article.title %></div>
+    <div class="fr-center">
+      <span class="fr-timer" id="frTimer">⏱️ 00:00</span>
+      <span class="fr-progress" id="frProgress">0% selesai</span>
+    </div>
+    <div class="fr-actions">
+      <button type="button" class="fr-btn" id="frAudioBtn" title="Dengarkan Berita">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        <span>Audio</span>
+      </button>
+      <button type="button" class="fr-btn" id="frTopBtn" title="Kembali ke atas">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m18 15-6-6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>

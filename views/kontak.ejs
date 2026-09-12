@@ -1,0 +1,54 @@
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Beranda</a> / Kontak</div>
+    <h1>Hubungi Kami</h1>
+    <p>Punya tips berita, pertanyaan, atau masukan? Kirimkan pesan kepada redaksi kami.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="layout-2col">
+      <div>
+        <% if (sent) { %>
+          <div class="alert alert-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Pesan Anda berhasil terkirim. Terima kasih telah menghubungi kami!</div>
+        <% } %>
+        <div class="form-card">
+          <h2 class="section-title" style="font-size:21px;margin-bottom:20px">Kirim Pesan</h2>
+          <form action="/kontak" method="POST">
+            <div class="field">
+              <label>Nama Lengkap</label>
+              <input type="text" name="name" required placeholder="Nama Anda">
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input type="email" name="email" required placeholder="email@contoh.com">
+            </div>
+            <div class="field">
+              <label>Subjek</label>
+              <input type="text" name="subject" placeholder="Subjek pesan">
+            </div>
+            <div class="field">
+              <label>Pesan</label>
+              <textarea name="body" required placeholder="Tulis pesan Anda di sini..."></textarea>
+            </div>
+            <button class="btn btn-primary" type="submit">Kirim Pesan <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+          </form>
+        </div>
+      </div>
+
+      <aside>
+        <div class="widget">
+          <h3 class="widget-title">Informasi Kontak</h3>
+          <p style="font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:9px"><%- h.icon('googlemaps', 15) %> <%= settings.address %></p>
+          <p style="font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:9px"><%- h.icon('gmail', 15) %> <%= settings.email %></p>
+          <p style="font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:9px"><%- h.icon('whatsapp', 15) %> <%= settings.phone %></p>
+        </div>
+        <div class="widget">
+          <h3 class="widget-title">Jam Operasional</h3>
+          <p style="font-size:14px;color:var(--muted)">Senin – Jumat: 08.00 – 20.00 WIB<br>Sabtu: 09.00 – 15.00 WIB</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

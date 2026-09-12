@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= title ? title + ' — ' + (settings.site_name || 'Nusantara News') : (settings.site_name || 'Nusantara News') %></title>
+<meta name="description" content="<%= settings.description || '' %>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%231e3a8a'/%3E%3Cpath fill='%23fff' d='M6 6h9l3 3v9H6z'/%3E%3Cpath fill='%231e3a8a' d='M8 9h5v1.5H8zm0 3h8v1.5H8zm0 3h5v1.5H8z'/%3E%3C/svg%3E">
+<script>
+  (function() {
+    try {
+      const saved = localStorage.getItem('nusantara_theme');
+      const prefDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved ? saved : (prefDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Lewati ke konten utama</a>
+
+<div id="readingProgress" class="reading-progress"></div>
+
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-left">
+      <span class="live-pill"><span class="live-dot"></span>LIVE UPDATE</span>
+      <span class="topbar-date"><%= h.formatDate(new Date().toISOString().slice(0,10)) %></span>
+      <span class="topbar-divider">|</span>
+      <span class="topbar-info">Edisi Nasional & Mancanegara</span>
+    </div>
+    <div class="topbar-right">
+      <div class="social-links">
+        <% if (settings.facebook && settings.facebook_visible === '1') { %><a href="<%= settings.facebook %>" aria-label="Facebook" title="Facebook"><%- h.icon('facebook', 14) %></a><% } %>
+        <% if (settings.instagram && settings.instagram_visible === '1') { %><a href="<%= settings.instagram %>" aria-label="Instagram" title="Instagram"><%- h.icon('instagram', 14) %></a><% } %>
+        <% if (settings.twitter && settings.twitter_visible === '1') { %><a href="<%= settings.twitter %>" aria-label="X" title="X"><%- h.icon('x', 12) %></a><% } %>
+        <% if (settings.youtube && settings.youtube_visible === '1') { %><a href="<%= settings.youtube %>" aria-label="YouTube" title="YouTube"><%- h.icon('youtube', 15) %></a><% } %>
+        <a href="/rss" aria-label="RSS" title="RSS"><%- h.icon('rss', 13) %></a>
+      </div>
+      <span class="topbar-divider">|</span>
+      <button class="theme-toggle" id="themeToggle" aria-label="Ganti Mode Gelap/Terang" title="Ganti Mode Gelap/Terang">
+        <span class="icon-sun"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></span>
+        <span class="icon-moon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+        <span class="theme-label">Tema</span>
+      </button>
+      <span class="topbar-divider">|</span>
+      <a href="/admin" class="topbar-admin-btn">Redaksi</a>
+    </div>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="brand">
+      <span class="brand-mark">N</span>
+      <span class="brand-text">
+        <span class="name"><%= settings.site_name || 'Nusantara News' %></span>
+        <span class="tag"><%= settings.tagline || 'Tepercaya & Berimbang' %></span>
+      </span>
+    </a>
+
+    <nav class="main-nav">
+      <a href="/" class="<%= active === 'home' ? 'active' : '' %>">Beranda</a>
+      <a href="/berita" class="<%= active === 'berita' ? 'active' : '' %>">Berita</a>
+      <% (categories || []).slice(0,4).forEach(function(c){ %>
+        <a href="/kategori/<%= c.slug %>"><%= c.name %></a>
+      <% }) %>
+      <a href="/video" class="<%= active === 'video' ? 'active' : '' %>">Video</a>
+      <a href="/galeri" class="<%= active === 'galeri' ? 'active' : '' %>">Galeri</a>
+      <a href="/tentang" class="<%= active === 'tentang' ? 'active' : '' %>">Tentang</a>
+      <a href="/kontak" class="<%= active === 'kontak' ? 'active' : '' %>">Kontak</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="search-toggle" aria-label="Cari">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <button class="menu-toggle" aria-label="Menu">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="search-panel">
+  <form action="/berita" method="get">
+    <input type="text" name="q" placeholder="Cari berita, topik, atau kata kunci…" value="<%= query.q || '' %>" autocomplete="off">
+    <button type="submit">Cari</button>
+  </form>
+</div>
+
+  <main id="main">
+    <%- body %>
+  </main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="name"><%= settings.site_name || 'Nusantara News' %></div>
+        <p><%= settings.description || '' %></p>
+        <div class="footer-social">
+          <% if (settings.facebook && settings.facebook_visible === '1') { %><a href="<%= settings.facebook %>" aria-label="Facebook" title="Facebook" class="s-fb"><%- h.icon('facebook', 18) %></a><% } %>
+          <% if (settings.instagram && settings.instagram_visible === '1') { %><a href="<%= settings.instagram %>" aria-label="Instagram" title="Instagram" class="s-ig"><%- h.icon('instagram', 18) %></a><% } %>
+          <% if (settings.twitter && settings.twitter_visible === '1') { %><a href="<%= settings.twitter %>" aria-label="X" title="X" class="s-x"><%- h.icon('x', 16) %></a><% } %>
+          <% if (settings.youtube && settings.youtube_visible === '1') { %><a href="<%= settings.youtube %>" aria-label="YouTube" title="YouTube" class="s-yt"><%- h.icon('youtube', 19) %></a><% } %>
+          <% if (settings.whatsapp && settings.whatsapp_visible === '1') { %><a href="<%= settings.whatsapp %>" aria-label="WhatsApp" title="WhatsApp" class="s-wa"><%- h.icon('whatsapp', 18) %></a><% } %>
+          <% if (settings.telegram && settings.telegram_visible === '1') { %><a href="<%= settings.telegram %>" aria-label="Telegram" title="Telegram" class="s-tg"><%- h.icon('telegram', 18) %></a><% } %>
+          <% if (settings.tiktok && settings.tiktok_visible === '1') { %><a href="<%= settings.tiktok %>" aria-label="TikTok" title="TikTok" class="s-tt"><%- h.icon('tiktok', 17) %></a><% } %>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Kategori</h4>
+        <ul>
+          <% (categories || []).forEach(function(c){ %>
+            <li><a href="/kategori/<%= c.slug %>"><%= c.name %></a></li>
+          <% }) %>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Jelajahi</h4>
+        <ul>
+          <li><a href="/berita">Semua Berita</a></li>
+          <li><a href="/video">Video</a></li>
+          <li><a href="/galeri">Galeri Foto</a></li>
+          <li><a href="/tentang">Tentang Kami</a></li>
+          <li><a href="/kontak">Kontak Redaksi</a></li>
+          <li><a href="/rss">Umpan RSS</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Hubungi Kami</h4>
+        <ul class="footer-contact">
+          <li><span class="fc-ic"><%- h.icon('googlemaps', 15) %></span><span><%= settings.address || '' %></span></li>
+          <li><span class="fc-ic"><%- h.icon('gmail', 15) %></span><span><%= settings.email || '' %></span></li>
+          <li><span class="fc-ic"><%- h.icon('whatsapp', 15) %></span><span><%= settings.phone || '' %></span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <%= new Date().getFullYear() %> <%= settings.site_name || 'Nusantara News' %>. Seluruh hak cipta dilindungi.</span>
+      <span>Pedoman Media Siber · Kebijakan Privasi · Redaksi</span>
+    </div>
+  </div>
+</footer>
+
+<button id="backToTop" class="back-to-top" aria-label="Kembali ke atas" title="Kembali ke atas">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<div id="siteToast" class="site-toast" role="status" aria-live="polite"></div>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

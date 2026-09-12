@@ -1,0 +1,117 @@
+﻿<%
+  var isEdit = !!article;
+  var action = isEdit ? '/admin/artikel/' + article.id : '/admin/artikel';
+  var val = function(field, fallback) {
+    if (isEdit && article[field] !== null && article[field] !== undefined) return article[field];
+    return fallback || '';
+  };
+  var curStatus = isEdit ? article.status : 'draft';
+  var curFeatured = isEdit ? article.featured : 0;
+  var curImage = isEdit ? article.image : null;
+%>
+<div class="page-head">
+  <div>
+    <h2><%= isEdit ? 'Edit Artikel' : 'Tulis Artikel' %></h2>
+    <div class="desc"><%= isEdit ? 'Perbarui konten dan publikasi artikel.' : 'Mulai tulis berita baru untuk Nusantara News.' %></div>
+  </div>
+</div>
+
+<form action="<%= action %>" method="POST" enctype="multipart/form-data">
+  <div class="form-grid">
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <h3><span class="hd-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span> Konten Artikel</h3>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="title">Judul Artikel <span class="req">*</span></label>
+            <input class="input" type="text" id="title" name="title" required placeholder="Tulis judul yang jelas dan menarik..." value="<%= val('title') %>" data-slug-source>
+            <div class="hint">Judul yang kuat membantu SEO dan pembaca memahaminya.</div>
+          </div>
+          <div class="field">
+            <label for="slug">Slug URL</label>
+            <input class="input" type="text" id="slug" name="slug" placeholder="otomatis-dari-judul" value="<%= val('slug') %>" data-slug-target>
+            <div class="hint">Biarkan kosong untuk membuat otomatis. Gunakan huruf kecil dan tanda hubung.</div>
+          </div>
+          <div class="field">
+            <label for="excerpt">Ringkasan</label>
+            <textarea class="textarea" id="excerpt" name="excerpt" style="min-height:96px" placeholder="Ringkasan singkat artikel (opsional)..."><%= val('excerpt') %></textarea>
+            <div class="hint">Jika dikosongkan, ringkasan dibuat otomatis dari isi artikel.</div>
+          </div>
+          <div class="field">
+            <label for="content">Isi Artikel <span class="req">*</span></label>
+            <textarea class="textarea" id="content" name="content" required style="min-height:380px;font-family:var(--a-mono);font-size:13px;line-height:1.8" placeholder="Tulis isi berita lengkap di sini... Paragraf dapat dipisahkan dengan baris kosong."><%= val('content') %></textarea>
+            <div class="hint">Mendukung teks polos · paragraf dipisahkan baris kosong · drop cap otomatis di halaman baca.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <h3><span class="hd-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Publikasi</h3>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="status">Status</label>
+            <select class="select" id="status" name="status">
+              <option value="draft" <%= curStatus === 'draft' ? 'selected' : '' %>>Draf</option>
+              <option value="published" <%= curStatus === 'published' ? 'selected' : '' %>>Terbit</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="category_id">Kategori</label>
+            <select class="select" id="category_id" name="category_id">
+              <option value="">— Tanpa Kategori —</option>
+              <% categories.forEach(function(c){ %>
+                <option value="<%= c.id %>" <%= String(val('category_id')) === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="field">
+            <label class="switch">
+              <input type="checkbox" name="featured" value="1" <%= curFeatured ? 'checked' : '' %>>
+              <span class="track"></span>
+              <span class="switch-label">Jadikan Berita Utama</span>
+            </label>
+            <div class="hint">Artikel utama tampil lebih menonjol di beranda.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3><span class="hd-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 21"/></svg></span> Gambar Sampul</h3>
+        </div>
+        <div class="panel-body">
+          <label class="img-drop">
+            <div class="prev" <% if (curImage) { %>style="background:url('/uploads/<%= curImage %>') center/cover no-repeat;border:0"<% } %>><%= curImage ? 'Ganti gambar' : 'Klik untuk memilih gambar' %></div>
+            <input type="file" name="image" accept="image/*">
+            <div class="txt"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3M17 8l-5-5-5 5M12 3v12"/></svg>Pilih dari perangkat</div>
+          </label>
+          <div class="v-stack" style="margin-top:10px">
+            <button type="button" class="btn btn-ghost btn-sm" data-edit-image data-preview="<%= curImage ? '/uploads/' + curImage : '' %>">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/><path d="m15 5 4 4"/></svg>
+              <%= curImage ? 'Crop / Edit Gambar' : 'Crop Setelah Pilih' %>
+            </button>
+          </div>
+          <div class="field" style="margin-top:14px">
+            <label for="image_url">atau URL Gambar</label>
+            <input class="input" type="text" id="image_url" name="image_url" placeholder="https://... atau images/art-1.svg" value="<%= curImage %>">
+          </div>
+          <%- include('../partials/media-editor', { editorId: 'media-editor-article-' + (isEdit ? article.id : 'new') }) %>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" type="submit" style="flex:1;justify-content:center;padding:12px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <%= isEdit ? 'Simpan Perubahan' : 'Simpan Artikel' %>
+        </button>
+        <a href="/admin/artikel" class="btn btn-ghost">Batal</a>
+      </div>
+    </div>
+  </div>
+</form>

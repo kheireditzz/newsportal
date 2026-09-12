@@ -1,0 +1,89 @@
+<div class="page-head">
+  <div>
+    <h2>Kelola Artikel</h2>
+    <div class="desc">Urutkan artikel dengan menarik gagang <span class="kbd">⠿</span>, lalu klik simpan.</div>
+  </div>
+  <div class="toolbar">
+    <form action="/admin/artikel" method="get">
+      <input class="input search-input" type="text" name="q" placeholder="Cari judul artikel..." value="<%= q || '' %>" aria-label="Cari artikel">
+      <select class="select" name="status" onchange="this.form.submit()" aria-label="Filter status">
+        <option value="" <%= (status || '') === '' ? 'selected' : '' %>>Semua Status</option>
+        <option value="published" <%= status === 'published' ? 'selected' : '' %>>Terbit</option>
+        <option value="draft" <%= status === 'draft' ? 'selected' : '' %>>Draf</option>
+      </select>
+      <button class="btn btn-dark btn-sm" type="submit">Cari</button>
+    </form>
+    <a href="/admin/artikel/baru" class="btn btn-primary btn-sm">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      Tulis Artikel
+    </a>
+  </div>
+</div>
+
+<div class="panel">
+  <% if (!articles.length) { %>
+    <div class="empty-state" style="padding:80px 20px">
+      <div class="big"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
+      <p>Belum ada artikel.</p>
+      <small><%= q ? 'Coba kata kunci lain atau reset filter.' : 'Mulai tulis berita pertama Anda.' %></small>
+      <div style="margin-top:18px">
+        <a href="/admin/artikel/baru" class="btn btn-primary">Tulis Artikel Pertama</a>
+      </div>
+    </div>
+  <% } else { %>
+  <div class="sortable-tip">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+    <b>Seret &amp; lepas</b> untuk mengatur urutan artikel di halaman depan.
+  </div>
+  <div class="sortable-list" data-sortable data-sortable-url="/api/admin/reorder/articles">
+    <% articles.forEach(function(a){ %>
+    <div class="sortable-item" data-sort-id="<%= a.id %>">
+      <span class="drag-handle" title="Seret untuk mengurutkan" aria-label="Seret untuk mengurutkan">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="5" r="1.4"/><circle cx="15" cy="5" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="19" r="1.4"/><circle cx="15" cy="19" r="1.4"/></svg>
+      </span>
+      <span class="tab-num"><%= String(articles.indexOf(a) + 1).padStart(2, '0') %></span>
+      <div class="cell-title">
+        <img class="thumb" src="/uploads/<%= a.image || 'images/art-1.svg' %>" alt="">
+        <div>
+          <b><a href="/admin/artikel/<%= a.id %>/edit"><%= a.title %></a></b>
+          <small>/berita/<%= a.slug %></small>
+        </div>
+      </div>
+      <div class="col-meta" style="display:flex;flex-direction:column;gap:4px">
+        <span class="badge badge-cat" style="align-self:flex-start"><%= a.category_name || '—' %></span>
+        <small class="text-muted" style="font-size:11px"><%= a.author_name || '—' %></small>
+      </div>
+      <div class="col-status">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <% if (a.status === 'published') { %><span class="badge badge-published">Terbit</span>
+          <% } else { %><span class="badge badge-draft">Draf</span><% } %>
+          <% if (a.featured) { %><span class="badge badge-featured">Utama</span><% } %>
+        </div>
+      </div>
+      <div class="col-views mono text-muted nowrap" style="font-size:12px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        <%= Number(a.views || 0).toLocaleString('id-ID') %>
+      </div>
+      <div class="col-date nowrap text-muted" style="font-size:12px">
+        <%= h.formatDate(a.published_at || a.created_at) %>
+      </div>
+      <div class="cell-actions">
+        <a href="/berita/<%= a.slug %>" target="_blank" rel="noopener" class="btn btn-ghost btn-sm btn-icon" title="Lihat">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </a>
+        <a href="/admin/artikel/<%= a.id %>/edit" class="btn btn-ghost btn-sm">Edit</a>
+        <form action="/admin/artikel/<%= a.id %>/delete" method="POST" data-confirm="Hapus artikel ini? Tindakan tidak dapat dibatalkan.">
+          <button class="btn btn-danger btn-sm btn-icon" type="submit" title="Hapus">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <div class="sortable-footer">
+    <span class="clean"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:4px"><path d="M4 4v16h16"/><path d="m4 9 4 4 4-5 8 8"/></svg> Urutan tersimpan otomatis saat Anda melepas item.</span>
+    <span class="dirty"><span class="dot dot-warn"></span> Ada perubahan urutan — menyimpan otomatis...</span>
+  </div>
+  <% } %>
+</div>

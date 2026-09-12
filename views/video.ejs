@@ -1,0 +1,32 @@
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Beranda</a> / Video</div>
+    <h1>Video</h1>
+    <p>Liputan, wawancara, dan laporan video pilihan dari redaksi <%= settings.site_name || 'Nusantara News' %>.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <% if (!videos.length) { %>
+      <div class="empty"><div class="empty-huge">0</div><p>Belum ada video yang dipublikasikan.</p></div>
+    <% } else { %>
+      <div class="video-grid">
+        <% videos.forEach(function(v){ %>
+          <article class="video-card">
+            <a href="#" class="video-thumb" data-video="<%= v.url %>">
+              <img src="/uploads/<%= v.thumbnail %>" alt="<%= v.title %>" loading="lazy">
+              <div class="play-btn"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
+              <% if (v.duration) { %><span class="video-duration"><%= v.duration %></span><% } %>
+            </a>
+            <div class="video-info">
+              <h4><%= v.title %></h4>
+              <p style="font-size:13px;color:var(--muted);margin-top:6px"><%= h.truncate(v.description, 90) %></p>
+              <% if (v.category_name) { %><div class="cat"><%= v.category_name %></div><% } %>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</section>

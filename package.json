@@ -1,0 +1,21 @@
+{
+  "name": "nusantara-news",
+  "version": "1.0.0",
+  "description": "Portal berita full-stack dengan panel admin lengkap",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/db/seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-ejs-layouts": "^2.5.1",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1"
+  }
+}

@@ -1,0 +1,44 @@
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Beranda</a> / Tentang</div>
+    <h1>Tentang Kami</h1>
+    <p><%= settings.tagline || 'Tepercaya, Tajam, dan Berimbang' %></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="layout-2col">
+      <div class="article-wrap" style="max-width:100%">
+        <div class="article-content">
+          <p><strong><%= settings.site_name %> adalah portal berita independen</strong> yang berkomitmen menyajikan informasi terkini, akurat, dan berimbang bagi masyarakat Indonesia. Kami percaya bahwa akses informasi yang jujur adalah fondasi demokrasi yang sehat.</p>
+          <h2>Visi</h2>
+          <p>Menjadi rujukan informasi digital terpercaya yang mengedepankan integritas, kedalaman analisis, dan keberagaman perspektif.</p>
+          <h2>Misi</h2>
+          <ul>
+            <li>Menyajikan berita yang terverifikasi dan bebas dari kepentingan pihak tertentu.</li>
+            <li>Mengedepankan jurnalisme data dan liputan mendalam.</li>
+            <li>Menghadirkan konten multimedia yang menarik dan mudah dipahami.</li>
+            <li>Membangun ruang diskusi publik yang sehat dan inklusif.</li>
+          </ul>
+          <blockquote>Redaksi fokus pada verifikasi lapangan yang ketat, konteks yang jernih, dan dampak nyata bagi kepentingan publik.</blockquote>
+          <h2>Nilai-Nilai Kami</h2>
+          <p>Independensi, akurasi, keberimbangan, dan penghormatan terhadap kode etik jurnalistik menjadi pedoman kerja seluruh tim redaksi kami setiap hari.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="widget">
+          <h3 class="widget-title">Redaksi</h3>
+          <p style="font-size:14px;color:var(--muted);line-height:1.7">Tim kami terdiri dari jurnalis, editor, fotografer, dan pengembang produk yang bekerja tanpa henti untuk menghadirkan berita terbaik.</p>
+        </div>
+        <div class="widget">
+          <h3 class="widget-title">Kontak</h3>
+          <p style="font-size:14px;margin-bottom:8px;display:flex;align-items:center;gap:9px"><%- h.icon('googlemaps', 15) %> <%= settings.address %></p>
+          <p style="font-size:14px;margin-bottom:8px;display:flex;align-items:center;gap:9px"><%- h.icon('gmail', 15) %> <%= settings.email %></p>
+          <p style="font-size:14px;display:flex;align-items:center;gap:9px"><%- h.icon('whatsapp', 15) %> <%= settings.phone %></p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= title ? title + ' — Admin ' + (settings.site_name || 'Nusantara News') : 'Admin ' + (settings.site_name || 'Nusantara News') %></title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%23090d16'/%3E%3Cpath fill='%23fff' d='M6 6h9l3 3v9H6z'/%3E%3Cpath fill='%23090d16' d='M8 9h5v1.5H8zm0 3h8v1.5H8zm0 3h5v1.5H8z'/%3E%3C/svg%3E">
+</head>
+<body>
+<%
+  if (typeof active === 'undefined') var active = '';
+  if (typeof title === 'undefined') var title = 'Admin';
+%>
+
+<div class="admin-shell">
+
+  <aside class="sidebar">
+    <a href="/admin" class="sidebar-brand">
+      <span class="mark">N</span>
+      <span class="meta">
+        <span class="name"><%= settings.site_name || 'Nusantara News' %></span>
+        <span class="sub">Panel Admin</span>
+      </span>
+    </a>
+
+    <nav class="side-nav">
+    <div class="side-group">
+      <div class="side-label">Utama</div>
+      <a href="/admin" class="side-link <%= active === 'dashboard' ? 'active' : '' %>">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        <span class="txt">Dashboard</span>
+      </a>
+    </div>
+
+    <div class="side-group">
+      <div class="side-label">Konten</div>
+      <a href="/admin/artikel" class="side-link <%= active === 'artikel' ? 'active' : '' %>">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        <span class="txt">Artikel</span>
+      </a>
+      <a href="/admin/kategori" class="side-link <%= active === 'kategori' ? 'active' : '' %>">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
+        <span class="txt">Kategori</span>
+      </a>
+      <a href="/admin/video" class="side-link <%= active === 'video' ? 'active' : '' %>">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg>
+        <span class="txt">Video</span>
+      </a>
+      <a href="/admin/galeri" class="side-link <%= active === 'galeri' ? 'active' : '' %>">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 21"/></svg>
+        <span class="txt">Galeri</span>
+      </a>
+      <a href="/admin/slide" class="side-link <%= active === 'slide' ? 'active' : '' %>">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 22h8M12 18v4"/></svg>
+        <span class="txt">Slider</span>
+      </a>
+    </div>
+
+    <div class="side-group">
+      <div class="side-label">Interaksi</div>
+      <a href="/admin/pesan" class="side-link <%= active === 'pesan' ? 'active' : '' %>">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="txt">Pesan</span>
+      </a>
+    </div>
+
+    <% if (currentUser && currentUser.role === 'admin') { %>
+    <div class="side-group">
+      <div class="side-label">Sistem</div>
+      <a href="/admin/pengguna" class="side-link <%= active === 'pengguna' ? 'active' : '' %>">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="txt">Pengguna</span>
+      </a>
+      <a href="/admin/pengaturan" class="side-link <%= active === 'pengaturan' ? 'active' : '' %>">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span class="txt">Pengaturan</span>
+      </a>
+      <a href="/admin/pencadangan" class="side-link <%= active === 'cadangan' ? 'active' : '' %>">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+        <span class="txt">Cadangan Data</span>
+      </a>
+    </div>
+    <% } %>
+    </nav>
+
+    <div class="sidebar-foot">
+      <a href="/" target="_blank" rel="noopener" class="side-link">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span class="txt">Lihat Situs</span>
+      </a>
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <div class="topbar-title" style="display:flex;align-items:center;gap:14px">
+        <button class="btn btn-ghost btn-icon admin-menu-toggle" aria-label="Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div>
+          <h1><%= title || 'Dashboard' %></h1>
+          <div class="topbar-sub"><%= settings.site_name || 'Nusantara News' %> · Panel Manajemen</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="topbar-user">
+          <span class="user-avatar"><%= (currentUser && currentUser.name ? currentUser.name : 'A').charAt(0).toUpperCase() %></span>
+          <span class="user-meta">
+            <b><%= currentUser ? currentUser.name : 'Tamu' %></b>
+            <span><%= currentUser ? currentUser.role : '' %></span>
+          </span>
+        </div>
+        <a href="/admin/logout" class="topbar-icon-btn danger" title="Keluar" aria-label="Keluar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </a>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <%- body %>
+    </main>
+  </div>
+
+</div>
+
+<script src="/js/admin.js"></script>
+<script src="/js/media.js"></script>
+</body>
+</html>

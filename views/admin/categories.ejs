@@ -1,0 +1,86 @@
+﻿<%
+  var editId = editing ? editing.id : null;
+%>
+<div class="page-head">
+  <div>
+    <h2>Kelola Kategori</h2>
+    <div class="desc">Atur urutan kategori untuk navigasi situs dengan menyeret gagang ⠿.</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head">
+      <h3><span class="hd-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg></span> Daftar Kategori</h3>
+      <span class="badge badge-muted"><%= categories.length %> kategori</span>
+    </div>
+    <div class="panel-body">
+      <% if (!categories.length) { %>
+        <div class="empty-state"><div class="big"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.2"/></svg></div>Belum ada kategori.</div>
+      <% } else { %>
+      <div class="sortable-list" data-sortable data-sortable-url="/api/admin/reorder/categories">
+        <% categories.forEach(function(c, i){ %>
+        <div class="sortable-item" data-sort-id="<%= c.id %>" <%= String(c.id) === String(editId) ? 'style="border-color:var(--a-brand);box-shadow:0 0 0 3px rgba(227,0,43,.12)"' : '' %>>
+          <span class="drag-handle" title="Seret untuk mengurutkan" aria-label="Seret untuk mengurutkan">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="5" r="1.4"/><circle cx="15" cy="5" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="19" r="1.4"/><circle cx="15" cy="19" r="1.4"/></svg>
+          </span>
+          <span style="width:18px;height:18px;border-radius:6px;background:<%= c.color || '#2563eb' %>;flex-shrink:0;box-shadow:0 2px 5px -1px rgba(0,0,0,.25)"></span>
+          <div style="flex:1;min-width:0">
+            <b style="font-size:13.8px;color:var(--a-ink)"><%= c.name %></b>
+            <% if (c.description) { %><div class="text-muted" style="font-size:11.5px;margin-top:2px"><%= c.description %></div><% } %>
+            <div class="mono text-muted" style="font-size:10.5px;margin-top:2px">/<%= c.slug %></div>
+          </div>
+          <span class="badge badge-muted"><%= c.article_count %> artikel</span>
+          <div class="cell-actions">
+            <a href="/admin/kategori/<%= c.id %>/edit" class="btn btn-ghost btn-sm">Edit</a>
+            <form action="/admin/kategori/<%= c.id %>/delete" method="POST" data-confirm="Hapus kategori &quot;<%= c.name %>&quot;? Artikel tidak akan terhapus, tetapi kehilangan kategorinya.">
+              <button class="btn btn-danger btn-sm btn-icon" type="submit" title="Hapus">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/></svg>
+              </button>
+            </form>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+      <div class="sortable-footer">
+        <span class="clean">Urutan tersimpan otomatis.</span>
+        <span class="dirty"><span class="dot dot-warn"></span> Menyimpan...</span>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="hd-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span> <%= editId ? 'Edit Kategori' : 'Tambah Kategori' %></h3>
+      </div>
+      <div class="panel-body">
+        <form action="<%= editId ? '/admin/kategori/' + editing.id : '/admin/kategori' %>" method="POST">
+          <div class="field">
+            <label for="name">Nama Kategori <span class="req">*</span></label>
+            <input class="input" type="text" id="name" name="name" required placeholder="mis. Nasional" value="<%= editId ? editing.name : '' %>">
+          </div>
+          <div class="field">
+            <label for="description">Deskripsi</label>
+            <textarea class="textarea" id="description" name="description" style="min-height:84px" placeholder="Deskripsi singkat kategori..."><%= editId ? (editing.description || '') : '' %></textarea>
+          </div>
+          <div class="field">
+            <label for="color">Warna Penanda</label>
+            <div style="display:flex;align-items:center;gap:10px">
+              <input class="input" type="color" id="color" name="color" style="width:56px;height:44px;padding:4px;cursor:pointer;flex-shrink:0" value="<%= editId ? (editing.color || '#e3002b') : '#e3002b' %>">
+              <span class="text-muted" style="font-size:12px">Digunakan sebagai aksen kategori.</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-primary" type="submit">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              <%= editId ? 'Simpan Perubahan' : 'Tambah Kategori' %>
+            </button>
+            <% if (editId) { %><a href="/admin/kategori" class="btn btn-ghost">Batal</a><% } %>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

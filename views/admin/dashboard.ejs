@@ -1,0 +1,151 @@
+<div class="page-head">
+  <div>
+    <h2>Ringkasan Redaksi</h2>
+    <div class="desc">Pantau performa konten Nusantara News hari ini.</div>
+  </div>
+  <div class="h-stack">
+    <span class="badge badge-cat"><span class="dot" style="background:var(--a-brand)"></span> Database OK</span>
+    <span class="badge badge-muted"><%= h.formatDate(new Date().toISOString().slice(0,10)) %></span>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card" style="--brand-c:#e3002b;--bg-c:#fff1f3">
+    <div class="stat-head">
+      <div class="ic">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+      </div>
+      <span class="trend">Total</span>
+    </div>
+    <div class="value"><%= stats.articles %></div>
+    <div class="label">Artikel</div>
+  </div>
+  <div class="stat-card" style="--brand-c:#0f9d58;--bg-c:#eafaf1">
+    <div class="stat-head">
+      <div class="ic">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <span class="trend"><%= stats.drafts %> draf</span>
+    </div>
+    <div class="value"><%= stats.published %></div>
+    <div class="label">Artikel Terbit</div>
+  </div>
+  <div class="stat-card" style="--brand-c:#f59e0b;--bg-c:#fff8e6">
+    <div class="stat-head">
+      <div class="ic">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+      <span class="trend">Pembaca</span>
+    </div>
+    <div class="value"><%= Number(stats.views).toLocaleString('id-ID') %></div>
+    <div class="label">Total Dilihat</div>
+  </div>
+  <div class="stat-card" style="--brand-c:#7c3aed;--bg-c:#f5f0ff">
+    <div class="stat-head">
+      <div class="ic">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+      </div>
+      <span class="trend"><%= stats.messages %> pesan</span>
+    </div>
+    <div class="value"><%= stats.unread %></div>
+    <div class="label">Pesan Belum Dibaca</div>
+  </div>
+</div>
+
+<div class="stats-grid stats-grid-5 stats-grid-secondary">
+  <% [
+    { v: stats.videos, l: 'Video', c: '#2563eb', b: '#eef2ff', ic: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg>' },
+    { v: stats.photos, l: 'Foto Galeri', c: '#0d9488', b: '#e6fffb', ic: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 21"/></svg>' },
+    { v: stats.categories, l: 'Kategori', c: '#0284c7', b: '#e6f7ff', ic: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>' },
+    { v: stats.slides, l: 'Slide', c: '#dc2626', b: '#fef1f1', ic: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 22h8M12 18v4"/></svg>' },
+    { v: stats.drafts, l: 'Draf Tersimpan', c: '#b45309', b: '#fef6e7', ic: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>' }
+  ].forEach(function(x){ %>
+  <div class="stat-card" style="--brand-c:<%= x.c %>;--bg-c:<%= x.b %>">
+    <div class="ic"><%- x.ic %></div>
+    <div class="value"><%= x.v %></div>
+    <div class="label"><%= x.l %></div>
+  </div>
+  <% }) %>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head">
+      <h3><span class="hd-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span> Artikel Terbaru</h3>
+      <a href="/admin/artikel" class="btn btn-ghost btn-sm">Kelola Semua</a>
+    </div>
+    <div class="panel-body flush">
+      <% if (!recent.length) { %>
+        <div class="empty-state"><div class="big"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>Belum ada artikel.</div>
+      <% } else { %>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Judul</th><th>Status</th><th style="text-align:right">Aksi</th></tr></thead>
+          <tbody>
+            <% recent.forEach(function(a){ %>
+            <tr>
+              <td>
+                <div class="cell-title">
+                  <img class="thumb" src="/uploads/<%= a.image || 'images/art-1.svg' %>" alt="">
+                  <div>
+                    <b><a href="/admin/artikel/<%= a.id %>/edit"><%= h.truncate(a.title, 52) %></a></b>
+                    <small><%= h.timeAgo(a.published_at || a.created_at) %> · <%= a.category_name || 'Tanpa Kategori' %></small>
+                  </div>
+                </div>
+              </td>
+              <td><% if (a.status === 'published') { %><span class="badge badge-published">Terbit</span><% } else { %><span class="badge badge-draft">Draf</span><% } %></td>
+              <td><div class="cell-actions"><a href="/admin/artikel/<%= a.id %>/edit" class="btn btn-ghost btn-sm">Edit</a></div></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <div class="panel-head"><h3><span class="hd-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Artikel Terpopuler</h3></div>
+      <div class="panel-body flush">
+        <% if (!popular.length) { %>
+          <div class="empty-state"><div class="big"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>Belum ada data.</div>
+        <% } else { %>
+          <% popular.forEach(function(a, i){ %>
+          <a href="/berita/<%= a.slug %>" target="_blank" rel="noopener" class="msg-item" style="position:relative">
+            <div class="av" style="background:linear-gradient(135deg,#33475c,#0f172a)"><%= i + 1 %></div>
+            <div class="body">
+              <b><%= h.truncate(a.title, 56) %></b>
+              <p><%= Number(a.views).toLocaleString('id-ID') %> kali dibaca</p>
+            </div>
+            <span class="text-brand nowrap" style="font-size:12px">→</span>
+          </a>
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="hd-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> Pesan Terbaru</h3>
+        <a href="/admin/pesan" class="btn btn-ghost btn-sm">Semua</a>
+      </div>
+      <div class="panel-body flush">
+        <% if (!messages.length) { %>
+          <div class="empty-state"><div class="big"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Belum ada pesan.</div>
+        <% } else { %>
+          <% messages.forEach(function(m){ %>
+          <a href="/admin/pesan/<%= m.id %>" class="msg-item <%= m.is_read ? '' : 'unread' %>">
+            <div class="av"><%= m.name.charAt(0).toUpperCase() %></div>
+            <div class="body">
+              <b><%= m.name %></b>
+              <p><%= m.subject || m.body %></p>
+            </div>
+            <span class="time"><%= h.timeAgo(m.created_at) %></span>
+          </a>
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
