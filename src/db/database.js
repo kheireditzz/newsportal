@@ -2,15 +2,37 @@ const { DatabaseSync } = require('node:sqlite');
 const path = require('path');
 const fs = require('fs');
 
-const dataDir = path.join(__dirname, '..', '..', 'data');
-if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+let dataDir = path.join(__dirname, '..', '..', 'data');
+let dbPath = path.join(dataDir, 'news.db');
 
-const db = new DatabaseSync(path.join(dataDir, 'news.db'));
+// Handle Vercel / serverless read-only filesystem:
+if (process.env.VERCEL || !fs.existsSync(dataDir)) {
+  const tmpDir = '/tmp/newsdata';
+  try {
+    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
+    const tmpDb = path.join(tmpDir, 'news.db');
+    if (!fs.existsSync(tmpDb) && fs.existsSync(dbPath)) {
+      fs.copyFileSync(dbPath, tmpDb);
+    }
+    dataDir = tmpDir;
+    dbPath = tmpDb;
+  } catch (e) {
+    console.warn('Fallback to /tmp failed, using memory:', e);
+  }
+} else {
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+}
+
+const db = new DatabaseSync(dbPath);
 
 function ensureColumn(table, column, ddl) {
-  const cols = db.prepare(`PRAGMA table_info(${table})`).all();
-  if (!cols.some(c => c.name === column)) {
-    db.exec(`ALTER TABLE ${table} ADD COLUMN ${ddl}`);
+  try {
+    const cols = db.prepare(`PRAGMA table_info(${table})`).all();
+    if (!cols.some(c => c.name === column)) {
+      db.exec(`ALTER TABLE ${table} ADD COLUMN ${ddl}`);
+    }
+  } catch (e) {
+    console.warn('ensureColumn skipped:', e.message);
   }
 }
 
