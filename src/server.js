@@ -14,6 +14,8 @@ const { upload, filePath, dbUpload } = require('./upload');
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 app.set('view engine', 'ejs');
 app.set('views', config.views);
 app.use(expressLayouts);
@@ -355,8 +357,14 @@ app.get('/tentang', (req, res) => render(res, 'tentang', { title: 'Tentang Kami'
 
 /* ============================ SEO & GOOGLE CRAWLER ============================ */
 
+function getBaseUrl(req) {
+  const host = req.get('host') || 'nusantara-berita.kheireditz.my.id';
+  const proto = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : (host.includes('localhost') ? 'http' : 'https');
+  return `${proto}://${host}`;
+}
+
 app.get('/robots.txt', (req, res) => {
-  const base = `${req.protocol}://${req.get('host')}`;
+  const base = getBaseUrl(req);
   const robots = `User-agent: *
 Allow: /
 Disallow: /admin
@@ -368,7 +376,7 @@ Sitemap: ${base}/sitemap.xml
 });
 
 app.get('/sitemap.xml', (req, res) => {
-  const base = `${req.protocol}://${req.get('host')}`;
+  const base = getBaseUrl(req);
   const articles = db.prepare("SELECT slug, updated_at, published_at FROM articles WHERE status = 'published' ORDER BY published_at DESC").all();
   const categories = db.prepare("SELECT slug FROM categories").all();
 
