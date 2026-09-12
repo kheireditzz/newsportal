@@ -6,7 +6,7 @@
   "headline": <%= JSON.stringify(article.title) %>,
   "description": <%= JSON.stringify(article.excerpt || article.title) %>,
   "image": [
-    "<%= (article.image && /^https?:\\/\\//i.test(article.image)) ? article.image : ((typeof fullUrl !== 'undefined' ? fullUrl.replace(/\\/berita\\/.*/, '') : '') + h.imgUrl(article.image)) %>"
+    "<%= (article.image && (article.image.startsWith('http://') || article.image.startsWith('https://'))) ? article.image : ((typeof canonical !== 'undefined' ? canonical.replace(/\/berita\/.*/, '') : '') + h.imgUrl(article.image)) %>"
   ],
   "datePublished": "<%= new Date(String(article.published_at || article.created_at || '').replace(' ', 'T')).toISOString() %>",
   "dateModified": "<%= new Date(String(article.updated_at || article.published_at || article.created_at || '').replace(' ', 'T')).toISOString() %>",
