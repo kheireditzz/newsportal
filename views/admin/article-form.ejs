@@ -99,7 +99,7 @@
           </div>
           <div class="field" style="margin-top:14px">
             <label for="image_url">atau URL Gambar</label>
-            <input class="input" type="text" id="image_url" name="image_url" placeholder="https://... atau images/art-1.svg" value="<%= curImage %>">
+            <input class="input" type="text" id="image_url" name="image_url" placeholder="https://images.unsplash.com/... atau URL foto" value="<%= curImage %>">
           </div>
           <%- include('../partials/media-editor', { editorId: 'media-editor-article-' + (isEdit ? article.id : 'new') }) %>
         </div>

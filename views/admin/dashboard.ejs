@@ -86,7 +86,7 @@
             <tr>
               <td>
                 <div class="cell-title">
-                  <img class="thumb" src="/uploads/<%= a.image || 'images/art-1.svg' %>" alt="">
+                  <img class="thumb" src="<%= h.imgUrl(a.image) %>" alt="">
                   <div>
                     <b><a href="/admin/artikel/<%= a.id %>/edit"><%= h.truncate(a.title, 52) %></a></b>
                     <small><%= h.timeAgo(a.published_at || a.created_at) %> · <%= a.category_name || 'Tanpa Kategori' %></small>
