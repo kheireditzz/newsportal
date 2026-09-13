@@ -119,9 +119,12 @@ function readingTime(text) {
   return `${minutes} menit baca`;
 }
 
-function imgUrl(val, fallback = 'images/art-1.svg') {
-  if (!val) return '/uploads/' + fallback;
+function imgUrl(val, fallback = 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1200&auto=format&fit=crop&q=80') {
+  if (!val) return fallback;
   if (/^https?:\/\//i.test(val)) return val;
+  if (val.endsWith('.svg') || val.includes('art-') || val.includes('vid-') || val.includes('photo-')) {
+    return fallback;
+  }
   if (val.startsWith('/')) return val;
   return '/uploads/' + val;
 }

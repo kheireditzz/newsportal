@@ -20,8 +20,8 @@
 
       <div class="gallery-grid filtered">
         <% photos.forEach(function(p, i){ %>
-          <div class="g-item <%= i===0 ? 'wide':'' %>" data-album="<%= p.album %>" data-full="<%= h.imgUrl(p.image, 'images/photo-1.svg') %>" data-caption="<%= p.caption || p.title %>">
-            <img src="<%= h.imgUrl(p.image, 'images/photo-1.svg') %>" alt="<%= p.title %>" loading="lazy">
+          <div class="g-item <%= i===0 ? 'wide':'' %>" data-album="<%= p.album %>" data-full="<%= h.imgUrl(p.image) %>" data-caption="<%= p.caption || p.title %>">
+            <img src="<%= h.imgUrl(p.image) %>" alt="<%= p.title %>" loading="lazy">
             <div class="cap"><%= p.title %></div>
           </div>
         <% }) %>

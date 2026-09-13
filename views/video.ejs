@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <% videos.forEach(function(v){ %>
           <article class="video-card">
             <a href="#" class="video-thumb" data-video="<%= v.url %>">
-              <img src="<%= h.imgUrl(v.thumbnail, 'images/vid-1.svg') %>" alt="<%= v.title %>" loading="lazy">
+              <img src="<%= h.imgUrl(v.thumbnail) %>" alt="<%= v.title %>" loading="lazy">
               <div class="play-btn"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
               <% if (v.duration) { %><span class="video-duration"><%= v.duration %></span><% } %>
             </a>
