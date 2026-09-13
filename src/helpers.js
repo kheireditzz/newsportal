@@ -119,6 +119,13 @@ function readingTime(text) {
   return `${minutes} menit baca`;
 }
 
+function imgUrl(val, fallback = 'images/art-1.svg') {
+  if (!val) return '/uploads/' + fallback;
+  if (/^https?:\/\//i.test(val)) return val;
+  if (val.startsWith('/')) return val;
+  return '/uploads/' + val;
+}
+
 function injectInContentAd(content) {
   if (!content) return '';
   const adHtml = `
