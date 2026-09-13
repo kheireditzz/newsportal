@@ -542,24 +542,97 @@ function initGallery() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
 }
 
-/* ---------- Video Lightbox Modal ---------- */
+/* ---------- Video Lightbox Modal with Video.js IMA VAST Ads ---------- */
 function initVideoModal() {
   const cards = document.querySelectorAll('[data-video]');
   if (!cards.length) return;
+
   const modal = document.createElement('div');
   modal.className = 'lightbox';
-  modal.innerHTML = '<button class="lb-close">&times;</button><div style="width:min(900px,92vw);aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden"><iframe style="width:100%;height:100%;border:0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe></div>';
+  modal.id = 'videoPlayerModal';
+  modal.innerHTML = `
+    <button class="lb-close">&times;</button>
+    <div style="width:min(900px,94vw);aspect-ratio:16/9;background:#000;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(0,0,0,0.6)">
+      <!-- HTML5 VideoJS Player with IMA Ad Tag -->
+      <div id="videojsWrap" style="width:100%;height:100%;display:none">
+        <video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" playsinline style="width:100%;height:100%">
+          <p class="vjs-no-js">Untuk melihat video ini, aktifkan JavaScript di browser Anda.</p>
+        </video>
+      </div>
+      <!-- YouTube / External Iframe Fallback -->
+      <iframe id="videoIframe" style="width:100%;height:100%;border:0;display:none" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+    </div>
+  `;
   document.body.appendChild(modal);
-  const iframe = modal.querySelector('iframe');
+
+  const vWrap = modal.querySelector('#videojsWrap');
+  const iframe = modal.querySelector('#videoIframe');
+  let vjsPlayer = null;
+
   cards.forEach(c => c.addEventListener('click', e => {
     e.preventDefault();
-    iframe.src = c.dataset.video + '?autoplay=1';
+    const rawUrl = c.dataset.video || '';
+
+    // Check if it's direct mp4/webm file or can be played via Video.js
+    const isDirectMedia = /\.(mp4|webm|m3u8|ogv)(\?.*)?$/i.test(rawUrl);
+
+    if (isDirectMedia && typeof videojs !== 'undefined') {
+      iframe.style.display = 'none';
+      iframe.src = '';
+      vWrap.style.display = 'block';
+
+      if (!vjsPlayer) {
+        vjsPlayer = videojs("my-video", {
+          autoplay: true,
+          controls: true
+        });
+
+        // Initialize Google IMA Video Ads
+        if (typeof vjsPlayer.ima === 'function') {
+          vjsPlayer.ima({
+            adTagUrl: "https://youradexchange.com/video/select.php?r=12153030",
+            debug: false
+          });
+        }
+      }
+
+      vjsPlayer.src({ type: 'video/mp4', src: rawUrl });
+      vjsPlayer.ready(() => {
+        vjsPlayer.play().catch(() => {});
+      });
+
+    } else {
+      // YouTube or external embed
+      if (vjsPlayer) {
+        try { vjsPlayer.pause(); } catch (_) {}
+      }
+      vWrap.style.display = 'none';
+      iframe.style.display = 'block';
+      const sep = rawUrl.includes('?') ? '&' : '?';
+      iframe.src = rawUrl + sep + 'autoplay=1';
+    }
+
     modal.classList.add('open');
   }));
+
+  const closeModal = () => {
+    modal.classList.remove('open');
+    iframe.src = '';
+    iframe.style.display = 'none';
+    if (vjsPlayer) {
+      try { vjsPlayer.pause(); } catch (_) {}
+    }
+  };
+
   modal.addEventListener('click', e => {
     if (e.target === modal || e.target.classList.contains('lb-close')) {
-      modal.classList.remove('open');
-      iframe.src = '';
+      closeModal();
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) {
+      closeModal();
     }
   });
 }

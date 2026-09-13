@@ -6,6 +6,49 @@
   </div>
 </section>
 
+<section class="section" style="padding-top:0;padding-bottom:12px">
+  <div class="container">
+    <div style="background:var(--card-bg, #ffffff);border:1px solid var(--line, #e2e8f0);border-radius:16px;padding:20px;box-shadow:var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));margin-bottom:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="width:8px;height:8px;border-radius:50%;background:#e3002b;animation:pulse 1.5s infinite"></span>
+          <span style="font-size:12px;font-weight:700;letter-spacing:0.5px;color:var(--text, #0b1118);text-transform:uppercase">Video Pemutar Resmi &amp; Iklan Sponsor</span>
+        </div>
+        <span style="font-size:11px;color:var(--muted);background:var(--line-2, #f1f5f9);padding:3px 8px;border-radius:6px;font-weight:600">VAST Video Ad Enabled</span>
+      </div>
+
+      <!-- Player Video.js dengan Ad Tag IMA Anda -->
+      <div style="width:100%;aspect-ratio:16/9;background:#000000;border-radius:12px;overflow:hidden;position:relative">
+        <video id="featured-video-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" playsinline style="width:100%;height:100%" poster="https://nusantara-berita.kheireditz.my.id/icon-512.png">
+          <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+          <p class="vjs-no-js">Untuk melihat video ini, aktifkan JavaScript di browser Anda.</p>
+        </video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof videojs !== 'undefined') {
+    try {
+      const featPlayer = videojs("featured-video-player", {
+        autoplay: false,
+        controls: true
+      });
+      if (typeof featPlayer.ima === 'function') {
+        featPlayer.ima({
+          adTagUrl: "https://youradexchange.com/video/select.php?r=12153030",
+          debug: false
+        });
+      }
+    } catch (err) {
+      console.warn('VideoJS IMA init warning:', err.message);
+    }
+  }
+});
+</script>
+
 <section class="section">
   <div class="container">
     <% if (!videos.length) { %>
