@@ -10,6 +10,7 @@ const config = require('./config');
 const db = require('./db/database');
 const helpers = require('./helpers');
 const auth = require('./auth');
+const adcash = require('./services/adcash');
 const { upload, filePath, dbUpload } = require('./upload');
 
 const app = express();
@@ -917,6 +918,30 @@ admin.post('/pengaturan', auth.requireAdmin, (req, res) => {
   ['facebook', 'instagram', 'twitter', 'youtube', 'whatsapp', 'telegram', 'tiktok']
     .forEach(k => upsert.run(`${k}_visible`, req.body[`${k}_visible`] ? '1' : '0'));
   res.redirect('/admin/pengaturan');
+});
+
+/* ---------- Adcash Reporting API & Statistics ---------- */
+admin.get('/statistik-iklan', async (req, res) => {
+  const period = ['today', 'week', 'month'].includes(req.query.period) ? req.query.period : 'today';
+  const forceRefresh = req.query.refresh === '1';
+  
+  const report = await adcash.getReports({ period, forceRefresh });
+  const currentToken = adcash.getApiToken();
+
+  render(res, 'admin/adcash-report', {
+    title: 'Statistik Iklan',
+    active: 'statistik-iklan',
+    period,
+    report,
+    currentToken,
+    msg: req.query.msg || ''
+  });
+});
+
+admin.post('/statistik-iklan/config', auth.requireAdmin, (req, res) => {
+  const { adcash_api_token } = req.body;
+  adcash.saveApiToken(adcash_api_token);
+  res.redirect('/admin/statistik-iklan?msg=token-saved');
 });
 
 /* ---------- DB Safety (admin only) ---------- */
