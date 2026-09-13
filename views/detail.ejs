@@ -1,24 +1,38 @@
 <!-- Schema.org NewsArticle Structured Data for Google Search & News -->
+<%
+  const articleImgUrl = (article.image && (article.image.startsWith('http://') || article.image.startsWith('https://')))
+    ? article.image
+    : ((typeof canonical !== 'undefined' ? canonical.replace(/\/berita\/.*/, '') : '') + h.imgUrl(article.image));
+
+  const jsonLdData = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": typeof canonical !== 'undefined' ? canonical : ''
+    },
+    "headline": article.title,
+    "description": article.excerpt || article.title,
+    "image": [articleImgUrl],
+    "datePublished": new Date(String(article.published_at || article.created_at || '').replace(' ', 'T')).toISOString(),
+    "dateModified": new Date(String(article.updated_at || article.published_at || article.created_at || '').replace(' ', 'T')).toISOString(),
+    "author": [{
+      "@type": "Person",
+      "name": article.author_name || 'Redaksi Nusantara'
+    }],
+    "publisher": {
+      "@type": "NewsMediaOrganization",
+      "name": settings.site_name || 'Nusantara News',
+      "url": "https://nusantara-berita.kheireditz.my.id",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://nusantara-berita.kheireditz.my.id/icon-512.png"
+      }
+    }
+  };
+%>
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "NewsArticle",
-  "headline": <%= JSON.stringify(article.title) %>,
-  "description": <%= JSON.stringify(article.excerpt || article.title) %>,
-  "image": [
-    "<%= (article.image && (article.image.startsWith('http://') || article.image.startsWith('https://'))) ? article.image : ((typeof canonical !== 'undefined' ? canonical.replace(/\/berita\/.*/, '') : '') + h.imgUrl(article.image)) %>"
-  ],
-  "datePublished": "<%= new Date(String(article.published_at || article.created_at || '').replace(' ', 'T')).toISOString() %>",
-  "dateModified": "<%= new Date(String(article.updated_at || article.published_at || article.created_at || '').replace(' ', 'T')).toISOString() %>",
-  "author": [{
-    "@type": "Person",
-    "name": "<%= article.author_name || 'Redaksi Nusantara' %>"
-  }],
-  "publisher": {
-    "@type": "NewsMediaOrganization",
-    "name": "<%= settings.site_name || 'Nusantara News' %>"
-  }
-}
+<%- JSON.stringify(jsonLdData, null, 2) %>
 </script>
 
 <section class="page-hero" style="padding:28px 0 32px">
