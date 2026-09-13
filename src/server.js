@@ -920,28 +920,33 @@ admin.post('/pengaturan', auth.requireAdmin, (req, res) => {
   res.redirect('/admin/pengaturan');
 });
 
-/* ---------- Adcash Reporting API & Statistics ---------- */
+/* ---------- Ad Networks Reporting API & Statistics (Adsterra & Adcash) ---------- */
 admin.get('/statistik-iklan', async (req, res) => {
+  const provider = req.query.provider === 'adcash' ? 'adcash' : 'adsterra';
   const period = ['today', 'week', 'month'].includes(req.query.period) ? req.query.period : 'today';
   const forceRefresh = req.query.refresh === '1';
   
-  const report = await adcash.getReports({ period, forceRefresh });
-  const currentToken = adcash.getApiToken();
+  const report = await adcash.getReports({ provider, period, forceRefresh });
+  const adsterraToken = adcash.getApiToken('adsterra');
+  const adcashToken = adcash.getApiToken('adcash');
 
   render(res, 'admin/adcash-report', {
     title: 'Statistik Iklan',
     active: 'statistik-iklan',
+    provider,
     period,
     report,
-    currentToken,
+    adsterraToken,
+    adcashToken,
     msg: req.query.msg || ''
   });
 });
 
 admin.post('/statistik-iklan/config', auth.requireAdmin, (req, res) => {
-  const { adcash_api_token } = req.body;
-  adcash.saveApiToken(adcash_api_token);
-  res.redirect('/admin/statistik-iklan?msg=token-saved');
+  const { provider, api_token } = req.body;
+  const targetProvider = provider === 'adcash' ? 'adcash' : 'adsterra';
+  adcash.saveApiToken(targetProvider, api_token);
+  res.redirect(`/admin/statistik-iklan?provider=${targetProvider}&msg=token-saved`);
 });
 
 /* ---------- DB Safety (admin only) ---------- */
