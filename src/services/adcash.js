@@ -1,28 +1,27 @@
 const db = require('../db/database');
 const { encrypt, decrypt } = require('../utils/crypto');
 
-const ADCASH_BASE_URL = 'https://adcash.myadcash.com/api/v2';
+const ADSTERRA_BASE_URL = 'https://api3.adsterratools.com/publisher';
 
-// In-memory / cache storage
+// In-memory cache storage (1 hour TTL)
 let cache = {
   key: null,
   timestamp: 0,
   data: null
 };
 
-// Access token cache to avoid exchanging API token on every request
-let accessTokenCache = {
-  apiToken: null,
-  token: null,
-  expiresAt: 0
+// Placements metadata cache
+let placementsCache = {
+  timestamp: 0,
+  map: {}
 };
 
 /**
- * Get stored Adcash API Token (from DB or process.env)
+ * Get stored API Token (from DB or process.env)
  */
 function getApiToken() {
-  if (process.env.ADCASH_API_TOKEN) {
-    return process.env.ADCASH_API_TOKEN.trim();
+  if (process.env.ADSTERRA_API_KEY) {
+    return process.env.ADSTERRA_API_KEY.trim();
   }
   const row = db.prepare("SELECT value FROM settings WHERE key = 'adcash_api_token'").get();
   if (row && row.value) {
@@ -32,7 +31,7 @@ function getApiToken() {
 }
 
 /**
- * Save Adcash API Token encrypted into database
+ * Save API Token encrypted into database
  */
 function saveApiToken(plainToken) {
   if (!plainToken) {
@@ -41,61 +40,57 @@ function saveApiToken(plainToken) {
     const encrypted = encrypt(plainToken.trim());
     db.prepare("INSERT INTO settings (key, value) VALUES ('adcash_api_token', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(encrypted);
   }
-  // Invalidate tokens and caches
-  accessTokenCache = { apiToken: null, token: null, expiresAt: 0 };
+  // Invalidate caches
   cache = { key: null, timestamp: 0, data: null };
+  placementsCache = { timestamp: 0, map: {} };
 }
 
 /**
- * Exchange API Token for Access Token (/auth/token)
+ * Fetch Placements dictionary to map placement_id to title & domain
  */
-async function getAccessToken(apiToken) {
+async function getPlacementsMap(apiKey) {
   const now = Date.now();
-  if (accessTokenCache.apiToken === apiToken && accessTokenCache.token && accessTokenCache.expiresAt > now + 60000) {
-    return accessTokenCache.token;
+  if (placementsCache.map && (now - placementsCache.timestamp < 3600000)) {
+    return placementsCache.map;
   }
 
-  const res = await fetch(`${ADCASH_BASE_URL}/auth/token`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({ token: apiToken })
-  });
-
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const msg = body.message || body.error || (res.status === 401 ? 'API Token tidak valid atau kadaluarsa.' : `Gagal autentikasi API: status ${res.status}`);
-    throw new Error(msg);
+  try {
+    const res = await fetch(`${ADSTERRA_BASE_URL}/placements.json`, {
+      headers: {
+        'Accept': 'application/json',
+        'X-API-Key': apiKey
+      }
+    });
+    if (res.ok) {
+      const json = await res.json();
+      const map = {};
+      (json.items || []).forEach(p => {
+        map[p.id] = {
+          title: p.title || p.alias || `Placement #${p.id}`,
+          alias: p.alias || '',
+          domainId: p.domain_id,
+          directUrl: p.direct_url || ''
+        };
+      });
+      placementsCache = { timestamp: now, map };
+      return map;
+    }
+  } catch (e) {
+    console.warn('Gagal memuat daftar placement Adsterra:', e.message);
   }
-
-  // Expect token or access_token in response
-  const token = body.token || body.access_token || body.data?.token || body.data?.access_token;
-  if (!token) {
-    throw new Error('Format respon token dari Adcash tidak dikenali.');
-  }
-
-  const expiresIn = Number(body.expires_in || 3600) * 1000;
-  accessTokenCache = {
-    apiToken,
-    token,
-    expiresAt: now + expiresIn
-  };
-
-  return token;
+  return placementsCache.map || {};
 }
 
 /**
- * Fetch reports from /publishers/reports
+ * Fetch stats from Adsterra Publisher Reporting API
  * @param {Object} options { period: 'today'|'week'|'month', forceRefresh: boolean }
  */
 async function getReports(options = {}) {
-  const apiToken = getApiToken();
-  if (!apiToken) {
+  const apiKey = getApiToken();
+  if (!apiKey) {
     return {
       configured: false,
-      error: 'API Key belum dikonfigurasi. Silakan masukkan API Token Adcash Anda di form pengaturan.',
+      error: 'API Key belum dikonfigurasi. Silakan masukkan API Key Anda di form konfigurasi.',
       data: null
     };
   }
@@ -115,10 +110,10 @@ async function getReports(options = {}) {
     };
   }
 
-  // Calculate start & end date (YYYY-MM-DD)
+  // Calculate start & finish date (YYYY-MM-DD)
   const today = new Date();
-  const endDate = today.toISOString().slice(0, 10);
-  let startDate = endDate;
+  const finishDate = today.toISOString().slice(0, 10);
+  let startDate = finishDate;
 
   if (period === 'week') {
     const d = new Date(today);
@@ -131,92 +126,98 @@ async function getReports(options = {}) {
   }
 
   try {
-    const accessToken = await getAccessToken(apiToken);
-    
-    // Fetch reports & balance in parallel
-    const [reportRes, balanceRes] = await Promise.all([
-      fetch(`${ADCASH_BASE_URL}/publishers/reports?start_date=${startDate}&end_date=${endDate}`, {
+    const [dateStatsRes, placementStatsRes, placementsMap] = await Promise.all([
+      fetch(`${ADSTERRA_BASE_URL}/stats.json?start_date=${startDate}&finish_date=${finishDate}&group_by=date`, {
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-API-Key': apiKey
         }
       }),
-      fetch(`${ADCASH_BASE_URL}/publishers/balance`, {
+      fetch(`${ADSTERRA_BASE_URL}/stats.json?start_date=${startDate}&finish_date=${finishDate}&group_by=placement`, {
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-API-Key': apiKey
         }
-      }).catch(() => null)
+      }).catch(() => null),
+      getPlacementsMap(apiKey)
     ]);
 
-    const reportJson = await reportRes.json().catch(() => ({}));
-    if (!reportRes.ok) {
-      const msg = reportJson.message || reportJson.error || (reportRes.status === 401 ? 'Access Token kadaluarsa atau tidak memiliki hak akses.' : `Error Adcash API: ${reportRes.status}`);
+    const dateJson = await dateStatsRes.json().catch(() => ({}));
+
+    if (!dateStatsRes.ok) {
+      const msg = dateJson.message || dateJson.error || (dateStatsRes.status === 401 ? 'API Key tidak valid atau tidak memiliki otorisasi (401).' : `Error API: Status ${dateStatsRes.status}`);
       throw new Error(msg);
     }
 
-    let balance = 0;
-    let currency = 'USD';
-    if (balanceRes && balanceRes.ok) {
-      const bJson = await balanceRes.json().catch(() => ({}));
-      balance = Number(bJson.balance || bJson.data?.balance || 0);
-      currency = bJson.currency || bJson.data?.currency || 'USD';
+    const dateItems = Array.isArray(dateJson.items) ? dateJson.items : [];
+    let placementItems = [];
+    if (placementStatsRes && placementStatsRes.ok) {
+      const pJson = await placementStatsRes.json().catch(() => ({}));
+      placementItems = Array.isArray(pJson.items) ? pJson.items : [];
     }
 
-    // Parse items array
-    const rawRows = Array.isArray(reportJson) 
-      ? reportJson 
-      : (Array.isArray(reportJson.data) ? reportJson.data : (Array.isArray(reportJson.rows) ? reportJson.rows : []));
-
-    // Calculate aggregated totals
+    // Totals aggregation
     let totalImpressions = 0;
     let totalClicks = 0;
     let totalRevenue = 0;
 
-    const formattedRows = rawRows.map(row => {
-      const imps = Number(row.impressions || row.views || 0);
-      const clks = Number(row.clicks || 0);
-      const rev = Number(row.earnings || row.revenue || row.money || 0);
-      const ctr = imps > 0 ? ((clks / imps) * 100) : Number(row.ctr || 0);
-      const cpm = imps > 0 ? ((rev / imps) * 1000) : Number(row.cpm || row.ecpm || 0);
-
-      totalImpressions += imps;
-      totalClicks += clks;
-      totalRevenue += rev;
-
-      return {
-        date: row.date || row.day || endDate,
-        zoneId: row.zone_id || row.zone || row.zoneId || 'Semua Zone',
-        zoneName: row.zone_name || row.zoneName || 'Ad Zone',
-        website: row.website || row.site || 'Nusantara News',
-        impressions: imps,
-        clicks: clks,
-        ctr: parseFloat(ctr.toFixed(2)),
-        cpm: parseFloat(cpm.toFixed(2)),
-        revenue: parseFloat(rev.toFixed(4))
-      };
+    dateItems.forEach(item => {
+      totalImpressions += Number(item.impression || 0);
+      totalClicks += Number(item.clicks || 0);
+      totalRevenue += Number(item.revenue || 0);
     });
 
     const averageCtr = totalImpressions > 0 ? parseFloat(((totalClicks / totalImpressions) * 100).toFixed(2)) : 0;
-    const averageCpm = totalImpressions > 0 ? parseFloat(((totalRevenue / totalImpressions) * 1000).toFixed(2)) : 0;
+    const averageCpm = totalImpressions > 0 ? parseFloat(((totalRevenue / totalImpressions) * 1000).toFixed(3)) : 0;
+
+    // Build placement breakdown
+    const formattedPlacements = placementItems.map(p => {
+      const info = placementsMap[p.placement] || {};
+      const imps = Number(p.impression || 0);
+      const clks = Number(p.clicks || 0);
+      const rev = Number(p.revenue || 0);
+      const ctr = Number(p.ctr || (imps > 0 ? (clks / imps * 100) : 0));
+      const cpm = Number(p.cpm || (imps > 0 ? (rev / imps * 1000) : 0));
+
+      return {
+        placementId: p.placement,
+        title: info.title || `Zone #${p.placement}`,
+        alias: info.alias || '',
+        directUrl: info.directUrl || '',
+        impressions: imps,
+        clicks: clks,
+        ctr: parseFloat(ctr.toFixed(2)),
+        cpm: parseFloat(cpm.toFixed(3)),
+        revenue: parseFloat(rev.toFixed(4))
+      };
+    }).sort((a, b) => b.impressions - a.impressions);
 
     const resultData = {
       period,
       startDate,
-      endDate,
-      balance,
-      currency,
+      endDate: finishDate,
+      currency: 'USD',
       summary: {
         impressions: totalImpressions,
         clicks: totalClicks,
         ctr: averageCtr,
         cpm: averageCpm,
-        revenue: parseFloat(totalRevenue.toFixed(2))
+        revenue: parseFloat(totalRevenue.toFixed(4))
       },
-      rows: formattedRows
+      dailyRows: dateItems.map(d => ({
+        date: d.date,
+        impressions: Number(d.impression || 0),
+        clicks: Number(d.clicks || 0),
+        ctr: parseFloat(Number(d.ctr || 0).toFixed(2)),
+        cpm: parseFloat(Number(d.cpm || 0).toFixed(3)),
+        revenue: parseFloat(Number(d.revenue || 0).toFixed(4))
+      })),
+      placementRows: formattedPlacements,
+      itemCount: dateJson.itemCount || dateItems.length,
+      dbLastUpdateTime: dateJson.dbLastUpdateTime || ''
     };
 
-    // Save to cache
+    // Cache results
     cache = {
       key: cacheKey,
       timestamp: now,
@@ -229,11 +230,12 @@ async function getReports(options = {}) {
       cacheTime: new Date(now),
       ...resultData
     };
+
   } catch (err) {
-    console.error('Adcash Reporting API Error:', err.message);
+    console.error('Publisher Reporting API Error:', err.message);
     return {
       configured: true,
-      error: err.message || 'Terjadi kesalahan saat menghubungi server Adcash.',
+      error: err.message || 'Terjadi kendala saat menghubungi server Reporting API.',
       data: null
     };
   }
