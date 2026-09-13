@@ -22,8 +22,11 @@ let placementsCache = {
   map: {}
 };
 
+const DEFAULT_ADSTERRA_KEY = '665ac7f18837e2eb890cccf60cdd2cdf';
+const DEFAULT_ADCASH_TOKEN = 'ipA/Nl5Agn5hRQeo7S6dnkH4E8zcop6L9TwAQrS515Of7a2r7F3Du4esWvJompF0m7XciIdGRlCipA0baXWZuNnkVrTMHl26d341p54edU4OzjpvdOKbsom3Eov+yeIz/MYLIrTSf751uAZoBYCCAg==';
+
 /**
- * Get stored API Token (from DB or process.env)
+ * Get stored API Token (from DB, process.env, or fallback)
  * @param {'adsterra'|'adcash'} provider
  */
 function getApiToken(provider = 'adsterra') {
@@ -31,18 +34,32 @@ function getApiToken(provider = 'adsterra') {
     if (process.env.ADSTERRA_API_KEY) {
       return process.env.ADSTERRA_API_KEY.trim();
     }
-    const row = db.prepare("SELECT value FROM settings WHERE key = 'adcash_api_token'").get();
-    if (row && row.value) return decrypt(row.value);
-    return '';
+    try {
+      const row = db.prepare("SELECT value FROM settings WHERE key = 'adcash_api_token'").get();
+      if (row && row.value) {
+        const dec = decrypt(row.value);
+        if (dec) return dec;
+      }
+    } catch (e) {
+      console.warn('Gagal membaca token adsterra dari DB:', e.message);
+    }
+    return DEFAULT_ADSTERRA_KEY;
   }
 
   if (provider === 'adcash') {
     if (process.env.ADCASH_API_KEY) {
       return process.env.ADCASH_API_KEY.trim();
     }
-    const row = db.prepare("SELECT value FROM settings WHERE key = 'adcash_v2_token'").get();
-    if (row && row.value) return decrypt(row.value);
-    return '';
+    try {
+      const row = db.prepare("SELECT value FROM settings WHERE key = 'adcash_v2_token'").get();
+      if (row && row.value) {
+        const dec = decrypt(row.value);
+        if (dec) return dec;
+      }
+    } catch (e) {
+      console.warn('Gagal membaca token adcash dari DB:', e.message);
+    }
+    return DEFAULT_ADCASH_TOKEN;
   }
 
   return '';
