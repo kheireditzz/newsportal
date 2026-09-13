@@ -119,11 +119,41 @@ function readingTime(text) {
   return `${minutes} menit baca`;
 }
 
-function imgUrl(val, fallback = 'images/art-1.svg') {
-  if (!val) return '/uploads/' + fallback;
-  if (/^https?:\/\//i.test(val)) return val;
-  if (val.startsWith('/')) return val;
-  return '/uploads/' + val;
+function injectInContentAd(content) {
+  if (!content) return '';
+  const adHtml = `
+<div class="in-article-ad-box" style="margin:26px 0;padding:14px;background:rgba(0,0,0,0.02);border:1px dashed var(--line, #e2e8f0);border-radius:12px;text-align:center;">
+  <span style="display:block;font-size:10.5px;letter-spacing:0.8px;font-weight:700;color:var(--muted, #64748b);text-transform:uppercase;margin-bottom:10px;">Iklan Disponsori</span>
+  <div style="min-height:90px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+    <script>
+      atOptions = {
+        'key' : 'a4c3b4dd04f8b05384ab2c8031d1e854',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    </script>
+    <script src="https://www.highrevenueformat.com/a4c3b4dd04f8b05384ab2c8031d1e854/invoke.js"></script>
+  </div>
+  <a href="https://www.profitableratecpmnetwork.com/bamxsvqgb?key=a616970d4eafc758c2c959f9c5d0f267" target="_blank" rel="noopener nofollow" style="display:inline-block;margin-top:8px;font-size:11.5px;color:var(--primary, #0284c7);text-decoration:none;font-weight:600;">
+    Rekomendasi Pilihan Terkini &raquo;
+  </a>
+</div>`;
+
+  // Sisipkan setelah penutup tag </p> kedua atau ketiga
+  let pCount = 0;
+  let injected = false;
+  const replaced = content.replace(/<\/p>/gi, (match) => {
+    pCount++;
+    if (pCount === 2 && !injected) {
+      injected = true;
+      return match + adHtml;
+    }
+    return match;
+  });
+
+  return injected ? replaced : content + adHtml;
 }
 
-module.exports = { slugify, uniqueSlug, getSettings, formatDate, timeAgo, truncate, icon, iconList, readingTime, imgUrl };
+module.exports = { slugify, uniqueSlug, getSettings, formatDate, timeAgo, truncate, icon, iconList, readingTime, imgUrl, injectInContentAd };

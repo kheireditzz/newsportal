@@ -330,6 +330,8 @@ app.get('/berita/:slug', (req, res) => {
   const proto = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : (host.includes('localhost') ? 'http' : 'https');
   const ogImage = imgPath.startsWith('http') ? imgPath : `${proto}://${host}${imgPath}`;
 
+  const isEnglish = article.category_slug === 'global-tech';
+
   render(res, 'detail', {
     title: article.title,
     active: 'berita',
@@ -338,7 +340,8 @@ app.get('/berita/:slug', (req, res) => {
     popular,
     ogImage,
     ogType: 'article',
-    ogDescription: article.excerpt || article.title
+    ogDescription: article.excerpt || article.title,
+    lang: isEnglish ? 'en' : 'id'
   });
 });
 

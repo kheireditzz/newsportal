@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<%= (typeof lang !== 'undefined' && lang) ? lang : 'id' %>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
 <meta name="description" content="<%= settings.description || 'Portal berita terkini, akurat, dan terpercaya menyajikan informasi nasional dan mancanegara.' %>">
 <meta name="google-site-verification" content="TPxLlLXWDP5INBgk6P69qtc4xEDxj_64NuCPS7tRCvI" />
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-<meta property="og:locale" content="id_ID">
+<meta property="og:locale" content="<%= (typeof lang !== 'undefined' && lang === 'en') ? 'en_US' : 'id_ID' %>">
 <meta property="og:type" content="<%= (typeof ogType !== 'undefined' && ogType) ? ogType : 'website' %>">
 <meta property="og:site_name" content="<%= settings.site_name || 'Nusantara News' %>">
 <meta property="og:title" content="<%= title ? title + ' — ' + (settings.site_name || 'Nusantara News') : (settings.site_name || 'Nusantara News') %>">
@@ -267,20 +267,75 @@
 <!-- Ad Network Scripts (Loaded at bottom of page) -->
 <script async src="https://pl31314501.profitableratecpmnetwork.com/38/45/1d/38451d34f5c92f58682d3222dcbffd26.js"></script>
 <script async src="https://pl31314887.profitableratecpmnetwork.com/fe/56/08/fe5608e9f547d161790a3646854f8f8e.js"></script>
+<!-- Adsterra Social Bar & In-Page Push High-CTR Placement -->
+<script type='text/javascript' src='//pl31314502.profitableratecpmnetwork.com/8c/cf/b4/8ccfb4040b68eccfac47d02c2dc6c33c.js'></script>
 <!-- Adcash / aclib Integration (AutoTag, Interstitial & VideoSlider) -->
 <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
 <script type="text/javascript">
-  if (window.aclib) {
-    if (typeof aclib.runInterstitial === 'function') {
-      aclib.runInterstitial({ zoneId: '12153034' });
+  window.addEventListener('load', function() {
+    if (window.aclib) {
+      if (typeof aclib.runInterstitial === 'function') {
+        try { aclib.runInterstitial({ zoneId: '12153034' }); } catch(e) {}
+      }
+      if (typeof aclib.runAutoTag === 'function') {
+        try { aclib.runAutoTag({ zoneId: 'koaxhzqe9m' }); } catch(e) {}
+      }
+      if (typeof aclib.runVideoSlider === 'function') {
+        try { aclib.runVideoSlider({ zoneId: '12151958' }); } catch(e) {}
+      }
+      if (typeof aclib.runPopUnder === 'function') {
+        try { aclib.runPopUnder({ zoneId: '12153034' }); } catch(e) {}
+      }
     }
-    if (typeof aclib.runAutoTag === 'function') {
-      aclib.runAutoTag({ zoneId: 'koaxhzqe9m' });
+  });
+
+  /* ---------- Smart Dual Popunder Engine (Adsterra DirectLink & Pop Trigger) ---------- */
+  (function() {
+    var AD_LINKS = [
+      'https://www.profitableratecpmnetwork.com/bamxsvqgb?key=a616970d4eafc758c2c959f9c5d0f267',
+      'https://www.profitableratecpmnetwork.com/n0ubnnvu1z?key=31bf08d000549603177abb00f2c324d3'
+    ];
+    var POP_INTERVAL_MS = 3 * 60 * 1000; // 3 menit interval agar aman dari filter bot sekaligus mendongkrak CPM
+
+    function canTriggerPop() {
+      try {
+        var last = parseInt(localStorage.getItem('nn_last_ad_pop') || '0', 10);
+        return (Date.now() - last) > POP_INTERVAL_MS;
+      } catch(e) {
+        return true;
+      }
     }
-    if (typeof aclib.runVideoSlider === 'function') {
-      aclib.runVideoSlider({ zoneId: '12151958' });
+
+    function recordTriggerPop() {
+      try {
+        localStorage.setItem('nn_last_ad_pop', Date.now().toString());
+      } catch(e) {}
     }
-  }
+
+    function handleFirstUserGesture(e) {
+      if (!canTriggerPop()) return;
+
+      // Hindari mengganggu tombol penting admin atau modal dialog
+      var target = e.target;
+      if (target && target.closest && (target.closest('.admin-bar') || target.closest('#adminModal'))) {
+        return;
+      }
+
+      var chosenLink = AD_LINKS[Math.floor(Math.random() * AD_LINKS.length)];
+      var win = window.open(chosenLink, '_blank');
+      if (win) {
+        recordTriggerPop();
+        // Coba pertahankan fokus ke portal berita agar tab iklan berjalan di background/new tab
+        try {
+          win.blur();
+          window.focus();
+        } catch(err) {}
+      }
+    }
+
+    // Pasang listener pada interaksi pertama (click / pointerup)
+    document.addEventListener('click', handleFirstUserGesture, { passive: true });
+  })();
 </script>
 </body>
 </html>
