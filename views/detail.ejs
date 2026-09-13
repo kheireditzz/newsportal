@@ -133,6 +133,23 @@
           <%- article.content %>
         </div>
 
+        <!-- In-Article Advertisement Banner (Adcash aclib runBanner) -->
+        <div class="ad-slot-wrapper" style="margin: 24px 0 24px;">
+          <div class="ad-slot-card">
+            <span class="ad-slot-label">Pariwara / Sponsor</span>
+            <div class="ad-slot-content">
+              <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
+              <div>
+                <script type="text/javascript">
+                  aclib.runBanner({
+                    zoneId: '12155266',
+                  });
+                </script>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Author Bio Card -->
         <div class="author-bio-card">
           <div class="author-avatar-big"><%= (article.author_name || 'R').charAt(0).toUpperCase() %></div>
