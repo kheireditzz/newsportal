@@ -57,35 +57,85 @@ function render(res, view, data = {}) {
 
 /* ============================ PUBLIC ROUTES ============================ */
 
-app.get('/', (req, res) => {
+function renderHomePage(req, res, pageLang = 'id') {
+  const base = getBaseUrl(req);
   const slides = db.prepare('SELECT * FROM slides WHERE active = 1 ORDER BY sort_order, id').all();
-  const featured = db.prepare(`
+  const langFilter = pageLang === 'en' ? "AND a.lang = 'en'" : "AND (a.lang = 'id' OR a.lang IS NULL)";
+  
+  let featured = db.prepare(`
     SELECT a.*, c.name AS category_name, c.slug AS category_slug, c.color AS category_color
     FROM articles a LEFT JOIN categories c ON c.id = a.category_id
-    WHERE a.status = 'published' AND a.featured = 1
+    WHERE a.status = 'published' AND a.featured = 1 ${langFilter}
     ORDER BY a.published_at DESC LIMIT 6`).all();
-  const latest = db.prepare(`
+  if (featured.length === 0 && pageLang === 'en') {
+    featured = db.prepare(`
+      SELECT a.*, c.name AS category_name, c.slug AS category_slug, c.color AS category_color
+      FROM articles a LEFT JOIN categories c ON c.id = a.category_id
+      WHERE a.status = 'published' AND a.lang = 'en'
+      ORDER BY a.published_at DESC LIMIT 6`).all();
+  }
+
+  let latest = db.prepare(`
     SELECT a.*, c.name AS category_name, c.slug AS category_slug, c.color AS category_color
     FROM articles a LEFT JOIN categories c ON c.id = a.category_id
-    WHERE a.status = 'published'
+    WHERE a.status = 'published' ${langFilter}
     ORDER BY a.published_at DESC LIMIT 9`).all();
+  if (latest.length === 0 && pageLang === 'en') {
+    latest = db.prepare(`
+      SELECT a.*, c.name AS category_name, c.slug AS category_slug, c.color AS category_color
+      FROM articles a LEFT JOIN categories c ON c.id = a.category_id
+      WHERE a.status = 'published'
+      ORDER BY a.published_at DESC LIMIT 9`).all();
+  }
+
   const popular = db.prepare(`
     SELECT a.*, c.name AS category_name, c.slug AS category_slug
     FROM articles a LEFT JOIN categories c ON c.id = a.category_id
-    WHERE a.status = 'published' ORDER BY a.views DESC LIMIT 5`).all();
+    WHERE a.status = 'published' ${langFilter} ORDER BY a.views DESC LIMIT 5`).all();
+
   const videos = db.prepare('SELECT * FROM videos WHERE status = \'published\' ORDER BY created_at DESC LIMIT 4').all();
   const photos = db.prepare('SELECT * FROM photos WHERE status = \'published\' ORDER BY created_at DESC LIMIT 6').all();
+
   const byCategory = db.prepare('SELECT * FROM categories ORDER BY sort_order, name').all().slice(0, 4).map(cat => ({
     category: cat,
     articles: db.prepare(`
       SELECT a.*, c.name AS category_name, c.slug AS category_slug, c.color AS category_color
       FROM articles a LEFT JOIN categories c ON c.id = a.category_id
-      WHERE a.status = 'published' AND a.category_id = ?
+      WHERE a.status = 'published' AND a.category_id = ? ${langFilter}
       ORDER BY a.published_at DESC LIMIT 3`).all(cat.id)
   })).filter(x => x.articles.length);
 
-  render(res, 'index', { title: settingsTitle(res), active: 'home', slides, featured, latest, popular, videos, photos, byCategory });
-});
+  const alternateLangs = [
+    { hreflang: 'id', href: `${base}/id` },
+    { hreflang: 'en', href: `${base}/en` },
+    { hreflang: 'x-default', href: `${base}/en` }
+  ];
+  const alternateUrls = {
+    id: `${base}/id`,
+    en: `${base}/en`
+  };
+  const canonical = pageLang === 'en' ? `${base}/en` : `${base}/id`;
+
+  render(res, 'index', {
+    title: pageLang === 'en' ? 'Nusantara News — Global English Edition' : settingsTitle(res),
+    active: 'home',
+    lang: pageLang,
+    canonical,
+    alternateLangs,
+    alternateUrls,
+    slides,
+    featured,
+    latest,
+    popular,
+    videos,
+    photos,
+    byCategory
+  });
+}
+
+app.get('/', (req, res) => renderHomePage(req, res, 'id'));
+app.get('/id', (req, res) => renderHomePage(req, res, 'id'));
+app.get('/en', (req, res) => renderHomePage(req, res, 'en'));
 
 function settingsTitle(res) {
   const s = res.locals.settings || {};
@@ -301,19 +351,77 @@ app.get('/berita', (req, res) => {
   });
 });
 
-app.get('/berita/:slug', (req, res) => {
+function renderArticleDetail(req, res, slug) {
+  const base = getBaseUrl(req);
   const article = db.prepare(`
     SELECT a.*, c.name AS category_name, c.slug AS category_slug, c.color AS category_color,
            u.name AS author_name
     FROM articles a
     LEFT JOIN categories c ON c.id = a.category_id
     LEFT JOIN users u ON u.id = a.author_id
-    WHERE a.slug = ? AND a.status = 'published'`).get(req.params.slug);
+    WHERE a.slug = ? AND a.status = 'published'`).get(slug);
 
-  if (!article) return render(res, '404', { title: 'Berita tidak ditemukan' });
+  if (!article) return render(res, '404', { title: 'Berita tidak ditemukan / Article not found' });
 
   db.prepare('UPDATE articles SET views = views + 1 WHERE id = ?').run(article.id);
   article.views += 1;
+
+  const articleLang = article.lang || (article.category_slug === 'global-tech' ? 'en' : 'id');
+
+  // Look for paired translation
+  let translationArticle = null;
+  if (article.translation_id) {
+    translationArticle = db.prepare(`
+      SELECT a.*, c.name AS category_name, c.slug AS category_slug
+      FROM articles a LEFT JOIN categories c ON c.id = a.category_id
+      WHERE a.id = ? AND a.status = 'published'
+    `).get(article.translation_id);
+  } else {
+    translationArticle = db.prepare(`
+      SELECT a.*, c.name AS category_name, c.slug AS category_slug
+      FROM articles a LEFT JOIN categories c ON c.id = a.category_id
+      WHERE a.translation_id = ? AND a.status = 'published'
+    `).get(article.id);
+  }
+
+  let idArticle = articleLang === 'id' ? article : null;
+  let enArticle = articleLang === 'en' ? article : null;
+
+  if (translationArticle) {
+    if (translationArticle.lang === 'id') idArticle = translationArticle;
+    if (translationArticle.lang === 'en') enArticle = translationArticle;
+  }
+
+  let alternateLangs = [];
+  let alternateUrls = {};
+  let canonical = '';
+
+  if (idArticle && enArticle) {
+    const idUrl = `${base}/id/${idArticle.slug}`;
+    const enUrl = `${base}/en/${enArticle.slug}`;
+    alternateLangs = [
+      { hreflang: 'id', href: idUrl },
+      { hreflang: 'en', href: enUrl },
+      { hreflang: 'x-default', href: enUrl }
+    ];
+    alternateUrls = { id: idUrl, en: enUrl };
+    canonical = articleLang === 'en' ? enUrl : idUrl;
+  } else if (articleLang === 'en') {
+    const enUrl = `${base}/en/${article.slug}`;
+    alternateLangs = [
+      { hreflang: 'en', href: enUrl },
+      { hreflang: 'x-default', href: enUrl }
+    ];
+    alternateUrls = { en: enUrl };
+    canonical = enUrl;
+  } else {
+    const idUrl = `${base}/id/${article.slug}`;
+    alternateLangs = [
+      { hreflang: 'id', href: idUrl }
+    ];
+    alternateUrls = { id: idUrl };
+    canonical = idUrl;
+  }
 
   const related = db.prepare(`
     SELECT a.*, c.name AS category_name, c.slug AS category_slug, c.color AS category_color
@@ -323,27 +431,35 @@ app.get('/berita/:slug', (req, res) => {
 
   const popular = db.prepare(`
     SELECT a.*, c.name AS category_name FROM articles a LEFT JOIN categories c ON c.id = a.category_id
-    WHERE a.status = 'published' ORDER BY a.views DESC LIMIT 5`).all();
+    WHERE a.status = 'published' AND a.lang = ?
+    ORDER BY a.views DESC LIMIT 5`).all(articleLang);
 
   const imgPath = helpers.imgUrl(article.image);
-  const host = req.get('host') || 'nusantara-berita.kheireditz.my.id';
-  const proto = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : (host.includes('localhost') ? 'http' : 'https');
-  const ogImage = imgPath.startsWith('http') ? imgPath : `${proto}://${host}${imgPath}`;
-
-  const isEnglish = article.category_slug === 'global-tech';
+  const ogImage = imgPath.startsWith('http') ? imgPath : `${base}${imgPath}`;
 
   render(res, 'detail', {
     title: article.title,
     active: 'berita',
     article,
+    translationArticle,
     related,
-    popular,
+    popular: popular.length ? popular : related,
     ogImage,
     ogType: 'article',
     ogDescription: article.excerpt || article.title,
-    lang: isEnglish ? 'en' : 'id'
+    lang: articleLang,
+    canonical,
+    alternateLangs,
+    alternateUrls
   });
-});
+}
+
+app.get('/id/:slug', (req, res) => renderArticleDetail(req, res, req.params.slug));
+app.get('/id/berita/:slug', (req, res) => renderArticleDetail(req, res, req.params.slug));
+app.get('/en/:slug', (req, res) => renderArticleDetail(req, res, req.params.slug));
+app.get('/en/news/:slug', (req, res) => renderArticleDetail(req, res, req.params.slug));
+app.get('/en/berita/:slug', (req, res) => renderArticleDetail(req, res, req.params.slug));
+app.get('/berita/:slug', (req, res) => renderArticleDetail(req, res, req.params.slug));
 
 app.get('/kategori/:slug', (req, res) => {
   const category = db.prepare('SELECT * FROM categories WHERE slug = ?').get(req.params.slug);
@@ -429,13 +545,36 @@ Sitemap: ${base}/sitemap.xml
 
 app.get('/sitemap.xml', (req, res) => {
   const base = getBaseUrl(req);
-  const articles = db.prepare("SELECT slug, updated_at, published_at FROM articles WHERE status = 'published' ORDER BY published_at DESC").all();
+  const articles = db.prepare("SELECT id, slug, lang, translation_id, updated_at, published_at FROM articles WHERE status = 'published' ORDER BY published_at DESC").all();
   const categories = db.prepare("SELECT slug FROM categories").all();
 
+  const artMap = new Map();
+  articles.forEach(a => artMap.set(a.id, a));
+
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>${base}/</loc>
+    <xhtml:link rel="alternate" hreflang="id" href="${base}/id"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${base}/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${base}/en"/>
+    <changefreq>always</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${base}/id</loc>
+    <xhtml:link rel="alternate" hreflang="id" href="${base}/id"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${base}/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${base}/en"/>
+    <changefreq>always</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${base}/en</loc>
+    <xhtml:link rel="alternate" hreflang="id" href="${base}/id"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${base}/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${base}/en"/>
     <changefreq>always</changefreq>
     <priority>1.0</priority>
   </url>
@@ -485,13 +624,40 @@ app.get('/sitemap.xml', (req, res) => {
   });
 
   articles.forEach(a => {
+    const aLang = a.lang || 'id';
+    const loc = `${base}/${aLang}/${a.slug}`;
     const d = (a.updated_at || a.published_at || new Date().toISOString()).slice(0, 10);
+    let altTags = '';
+
+    let idArt = aLang === 'id' ? a : null;
+    let enArt = aLang === 'en' ? a : null;
+
+    if (a.translation_id && artMap.has(a.translation_id)) {
+      const pair = artMap.get(a.translation_id);
+      if (pair.lang === 'id') idArt = pair;
+      if (pair.lang === 'en') enArt = pair;
+    }
+
+    if (idArt && enArt) {
+      altTags = `
+    <xhtml:link rel="alternate" hreflang="id" href="${base}/id/${idArt.slug}"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${base}/en/${enArt.slug}"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${base}/en/${enArt.slug}"/>`;
+    } else if (aLang === 'en') {
+      altTags = `
+    <xhtml:link rel="alternate" hreflang="en" href="${base}/en/${a.slug}"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${base}/en/${a.slug}"/>`;
+    } else {
+      altTags = `
+    <xhtml:link rel="alternate" hreflang="id" href="${base}/id/${a.slug}"/>`;
+    }
+
     xml += `
   <url>
-    <loc>${base}/berita/${a.slug}</loc>
+    <loc>${loc}</loc>${altTags}
     <lastmod>${d}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>`;
   });
 
@@ -501,16 +667,16 @@ app.get('/sitemap.xml', (req, res) => {
 
 app.get('/rss', (req, res) => {
   const site = helpers.getSettings();
-  const base = `${req.protocol}://${req.get('host')}`;
+  const base = getBaseUrl(req);
   const rows = db.prepare(`
-    SELECT a.title, a.slug, a.excerpt, a.published_at, c.name AS category
+    SELECT a.title, a.slug, a.excerpt, a.published_at, a.lang, c.name AS category
     FROM articles a LEFT JOIN categories c ON c.id = a.category_id
     WHERE a.status = 'published' ORDER BY a.published_at DESC LIMIT 30`).all();
   const items = rows.map(a => `
     <item>
       <title><![CDATA[${a.title}]]></title>
-      <link>${base}/berita/${a.slug}</link>
-      <guid isPermaLink="true">${base}/berita/${a.slug}</guid>
+      <link>${base}/${a.lang || 'id'}/${a.slug}</link>
+      <guid isPermaLink="true">${base}/${a.lang || 'id'}/${a.slug}</guid>
       ${a.category ? `<category><![CDATA[${a.category}]]></category>` : ''}
       <description><![CDATA[${a.excerpt || ''}]]></description>
       <pubDate>${new Date(String(a.published_at || '').replace(' ', 'T')).toUTCString()}</pubDate>
@@ -521,6 +687,34 @@ app.get('/rss', (req, res) => {
   <link>${base}</link>
   <description><![CDATA[${site.description || ''}]]></description>
   <language>id-ID</language>
+  <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+  ${items}
+</channel></rss>`;
+  res.type('application/rss+xml').send(xml);
+});
+
+app.get('/rss/en', (req, res) => {
+  const site = helpers.getSettings();
+  const base = getBaseUrl(req);
+  const rows = db.prepare(`
+    SELECT a.title, a.slug, a.excerpt, a.published_at, c.name AS category
+    FROM articles a LEFT JOIN categories c ON c.id = a.category_id
+    WHERE a.status = 'published' AND a.lang = 'en' ORDER BY a.published_at DESC LIMIT 30`).all();
+  const items = rows.map(a => `
+    <item>
+      <title><![CDATA[${a.title}]]></title>
+      <link>${base}/en/${a.slug}</link>
+      <guid isPermaLink="true">${base}/en/${a.slug}</guid>
+      ${a.category ? `<category><![CDATA[${a.category}]]></category>` : ''}
+      <description><![CDATA[${a.excerpt || ''}]]></description>
+      <pubDate>${new Date(String(a.published_at || '').replace(' ', 'T')).toUTCString()}</pubDate>
+    </item>`).join('');
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+  <title><![CDATA[${site.site_name || 'Nusantara News'} — International Edition]]></title>
+  <link>${base}/en</link>
+  <description><![CDATA[Breaking global tech, economy, and worldwide headlines.]]></description>
+  <language>en-US</language>
   <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
   ${items}
 </channel></rss>`;

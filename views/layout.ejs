@@ -13,6 +13,11 @@
 <meta property="og:title" content="<%= title ? title + ' — ' + (settings.site_name || 'Nusantara News') : (settings.site_name || 'Nusantara News') %>">
 <meta property="og:description" content="<%= (typeof ogDescription !== 'undefined' && ogDescription) ? ogDescription : (settings.description || 'Portal berita terkini, akurat, dan terpercaya.') %>">
 <link rel="canonical" href="<%= canonical %>">
+<% if (typeof alternateLangs !== 'undefined' && Array.isArray(alternateLangs)) { %>
+  <% alternateLangs.forEach(function(alt) { %>
+<link rel="alternate" hreflang="<%= alt.hreflang %>" href="<%= alt.href %>">
+  <% }); %>
+<% } %>
 <meta property="og:url" content="<%= canonical %>">
 <meta property="og:image" content="<%= (typeof ogImage !== 'undefined' && ogImage) ? ogImage : 'https://nusantara-berita.kheireditz.my.id/icon-512.png' %>">
 <meta property="og:image:width" content="1200">
@@ -116,6 +121,12 @@
         <span class="icon-moon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
         <span class="theme-label">Tema</span>
       </button>
+      <span class="topbar-divider">|</span>
+      <div class="lang-switcher" role="navigation" aria-label="Language Selector">
+        <a href="<%= (typeof alternateUrls !== 'undefined' && alternateUrls.id) ? alternateUrls.id : '/id' %>" class="lang-btn <%= (typeof lang === 'undefined' || lang === 'id') ? 'active' : '' %>" title="Edisi Indonesia">🇮🇩 ID</a>
+        <span class="lang-sep">|</span>
+        <a href="<%= (typeof alternateUrls !== 'undefined' && alternateUrls.en) ? alternateUrls.en : '/en' %>" class="lang-btn <%= (typeof lang !== 'undefined' && lang === 'en') ? 'active' : '' %>" title="Global English Edition">🇬🇧 EN</a>
+      </div>
       <span class="topbar-divider">|</span>
       <a href="/admin" class="topbar-admin-btn">Redaksi</a>
     </div>
@@ -289,17 +300,17 @@
     }
   });
 
-  /* ---------- Smart Dual Popunder Engine (Adsterra DirectLink & Pop Trigger) ---------- */
+  /* ---------- High-Yield Popunder & Background Tab-Under Engine (Adsterra & DirectLink) ---------- */
   (function() {
     var AD_LINKS = [
       'https://www.profitableratecpmnetwork.com/bamxsvqgb?key=a616970d4eafc758c2c959f9c5d0f267',
       'https://www.profitableratecpmnetwork.com/n0ubnnvu1z?key=31bf08d000549603177abb00f2c324d3'
     ];
-    var POP_INTERVAL_MS = 3 * 60 * 1000; // 3 menit interval agar aman dari filter bot sekaligus mendongkrak CPM
+    var POP_INTERVAL_MS = 60 * 1000; // 60 detik interval antar pop agar impression maksimal
 
     function canTriggerPop() {
       try {
-        var last = parseInt(localStorage.getItem('nn_last_ad_pop') || '0', 10);
+        var last = parseInt(sessionStorage.getItem('nn_last_ad_pop') || '0', 10);
         return (Date.now() - last) > POP_INTERVAL_MS;
       } catch(e) {
         return true;
@@ -308,24 +319,17 @@
 
     function recordTriggerPop() {
       try {
-        localStorage.setItem('nn_last_ad_pop', Date.now().toString());
+        sessionStorage.setItem('nn_last_ad_pop', Date.now().toString());
       } catch(e) {}
     }
 
-    function handleFirstUserGesture(e) {
+    function firePopunder() {
       if (!canTriggerPop()) return;
-
-      // Hindari mengganggu tombol penting admin atau modal dialog
-      var target = e.target;
-      if (target && target.closest && (target.closest('.admin-bar') || target.closest('#adminModal'))) {
-        return;
-      }
 
       var chosenLink = AD_LINKS[Math.floor(Math.random() * AD_LINKS.length)];
       var win = window.open(chosenLink, '_blank');
       if (win) {
         recordTriggerPop();
-        // Coba pertahankan fokus ke portal berita agar tab iklan berjalan di background/new tab
         try {
           win.blur();
           window.focus();
@@ -333,8 +337,33 @@
       }
     }
 
-    // Pasang listener pada interaksi pertama (click / pointerup)
-    document.addEventListener('click', handleFirstUserGesture, { passive: true });
+    function handleUserGesture(e) {
+      var target = e.target;
+      if (target && target.closest && (target.closest('.admin-bar') || target.closest('#adminModal'))) {
+        return;
+      }
+      firePopunder();
+    }
+
+    // 1. Trigger pada klik / sentuhan layar pertama
+    document.addEventListener('click', handleUserGesture, { passive: true });
+    document.addEventListener('touchend', handleUserGesture, { passive: true });
+
+    // 2. Tab-Under Trigger: ketika user beralih ke tab lain atau meminimalkan browser
+    var hasTriggeredOnLeave = false;
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'hidden' && !hasTriggeredOnLeave) {
+        hasTriggeredOnLeave = true;
+        firePopunder();
+      }
+    });
+
+    // 3. Trigger ketika user kembali membuka tab web kita
+    window.addEventListener('focus', function() {
+      if (canTriggerPop()) {
+        firePopunder();
+      }
+    });
   })();
 </script>
 </body>

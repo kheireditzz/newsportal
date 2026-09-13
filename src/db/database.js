@@ -134,10 +134,17 @@ CREATE INDEX IF NOT EXISTS idx_articles_slug ON articles(slug);
 `);
 
 ensureColumn('articles', 'sort_order', 'sort_order INTEGER NOT NULL DEFAULT 0');
+ensureColumn('articles', 'lang', "lang TEXT NOT NULL DEFAULT 'id'");
+ensureColumn('articles', 'translation_id', 'translation_id INTEGER REFERENCES articles(id) ON DELETE SET NULL');
 ensureColumn('categories', 'sort_order', 'sort_order INTEGER NOT NULL DEFAULT 0');
 ensureColumn('videos', 'sort_order', 'sort_order INTEGER NOT NULL DEFAULT 0');
 ensureColumn('photos', 'sort_order', 'sort_order INTEGER NOT NULL DEFAULT 0');
 ensureColumn('slides', 'show_image', 'show_image INTEGER NOT NULL DEFAULT 1');
+
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_articles_lang ON articles(lang);
+  CREATE INDEX IF NOT EXISTS idx_articles_translation ON articles(translation_id);
+`);
 
 const SOCIAL_KEYS = ['facebook', 'instagram', 'twitter', 'youtube', 'whatsapp', 'telegram', 'tiktok'];
 const insertSetting = db.prepare('INSERT OR IGNORE INTO settings (key,value) VALUES (?,?)');

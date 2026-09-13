@@ -63,6 +63,18 @@
             </div>
           <% } %>
 
+          <% if (typeof translationArticle !== 'undefined' && translationArticle) { %>
+            <div class="lang-banner-box">
+              <span class="lang-banner-icon">🌐</span>
+              <span class="lang-banner-text">
+                <%= (typeof lang !== 'undefined' && lang === 'en') ? 'Versi Bahasa Indonesia tersedia:' : 'English edition available:' %>
+              </span>
+              <a href="<%= (translationArticle.lang === 'en') ? ('/en/' + translationArticle.slug) : ('/id/' + translationArticle.slug) %>" class="lang-banner-link">
+                <%= (translationArticle.lang === 'en') ? 'Read in English 🇬🇧' : 'Baca Versi Indonesia 🇮🇩' %> &rarr;
+              </a>
+            </div>
+          <% } %>
+
           <h1 class="article-title serif"><%= article.title %></h1>
 
           <% if (article.excerpt) { %>

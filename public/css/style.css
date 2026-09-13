@@ -219,6 +219,76 @@ button, input, textarea, select { font: inherit; color: inherit; max-width: 100%
   background: var(--brand);
 }
 
+/* Language Switcher */
+.lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
+  padding: 2px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 3px;
+}
+.lang-btn {
+  color: #cbd5e1 !important;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  line-height: 1.2;
+}
+.lang-btn:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.15);
+}
+.lang-btn.active {
+  background: var(--brand, #2563eb);
+  color: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.lang-sep {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 10px;
+}
+
+/* Lang Banner in Article Detail */
+.lang-banner-box {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+}
+[data-theme="dark"] .lang-banner-box {
+  background: rgba(37, 99, 235, 0.15);
+  border-color: rgba(59, 130, 246, 0.35);
+}
+.lang-banner-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+.lang-banner-text {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.lang-banner-link {
+  color: var(--brand, #2563eb) !important;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+.lang-banner-link:hover {
+  color: #1d4ed8 !important;
+}
+
 /* ---------- Header ---------- */
 .site-header {
   background: var(--card);
