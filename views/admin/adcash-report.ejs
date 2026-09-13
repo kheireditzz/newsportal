@@ -7,43 +7,57 @@
   }
 
   /* Provider Switcher Tabs */
+  /* Clean Segmented Control Tabs */
   .provider-nav {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px;
-    background: #ffffff;
-    border: 1px solid var(--a-line);
-    border-radius: 14px;
-    box-shadow: var(--a-shadow-sm);
-    width: fit-content;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 4px;
+    border-radius: 12px;
+    gap: 4px;
   }
   .provider-tab {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 9px 18px;
-    border-radius: 10px;
-    font-size: 13.5px;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 9px;
+    font-size: 13px;
     font-weight: 700;
-    color: var(--a-muted);
+    color: #64748b;
     text-decoration: none;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    line-height: 1;
   }
   .provider-tab:hover {
-    color: var(--a-ink);
-    background: var(--a-line-2);
+    color: #0f172a;
   }
   .provider-tab.active {
-    background: var(--a-side);
-    color: #ffffff;
-    box-shadow: 0 4px 14px rgba(11, 17, 24, 0.25);
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
   }
   .provider-tab .dot-indicator {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .provider-tab .tab-badge {
+    font-size: 10px;
+    font-weight: 700;
+    font-family: var(--a-mono);
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: #e2e8f0;
+    color: #475569;
+    transition: all 0.18s;
+  }
+  .provider-tab.active .tab-badge {
+    background: #f1f5f9;
+    color: #0f172a;
   }
 
   /* Key Info Box (Click-to-reveal) */
@@ -301,18 +315,18 @@
 
   <!-- Top Bar: Provider Switcher + API Key Reveal Widget -->
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
-    <!-- Provider Selection Tab -->
+    <!-- Provider Selection Tab (Segmented Control) -->
     <div class="provider-nav">
       <a href="/admin/statistik-iklan?provider=adsterra&period=<%= period %>" class="provider-tab <%= provider === 'adsterra' ? 'active' : '' %>">
-        <span class="dot-indicator" style="background:<%= provider === 'adsterra' ? '#10b981' : '#cbd5e1' %>"></span>
-        <span>Adsterra Network</span>
-        <span style="font-size:11px;opacity:0.75;padding:1px 6px;border-radius:4px;background:rgba(255,255,255,0.15)">v3 API</span>
+        <span class="dot-indicator" style="background:<%= provider === 'adsterra' ? '#10b981' : '#94a3b8' %>"></span>
+        <span>Adsterra</span>
+        <span class="tab-badge">v3 API</span>
       </a>
 
       <a href="/admin/statistik-iklan?provider=adcash&period=<%= period %>" class="provider-tab <%= provider === 'adcash' ? 'active' : '' %>">
-        <span class="dot-indicator" style="background:<%= provider === 'adcash' ? '#3b82f6' : '#cbd5e1' %>"></span>
-        <span>Adcash Publisher</span>
-        <span style="font-size:11px;opacity:0.75;padding:1px 6px;border-radius:4px;background:rgba(255,255,255,0.15)">v2 Auth</span>
+        <span class="dot-indicator" style="background:<%= provider === 'adcash' ? '#3b82f6' : '#94a3b8' %>"></span>
+        <span>Adcash</span>
+        <span class="tab-badge">v2 Auth</span>
       </a>
     </div>
 
