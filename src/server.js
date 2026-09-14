@@ -26,6 +26,9 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(config.root, 'public')));
+app.get('/kadam79c58115ccba5a686bdbe604cb1ac4cb.html', (req, res) => {
+  res.type('html').send('kadam79c58115ccba5a686bdbe604cb1ac4cb');
+});
 if (process.env.VERCEL) {
   app.use('/uploads', express.static(config.uploads));
 }
